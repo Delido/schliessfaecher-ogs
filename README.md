@@ -51,16 +51,22 @@ Dieses Repository enthält **keine echten Personendaten**. Die mitgelieferte
 `beispieldaten.json` ist frei erfunden.
 
 Die App verarbeitet Namen von Kindern – also personenbezogene Daten. Sie werden
-ausschließlich lokal gespeichert und niemals irgendwohin übertragen; die App hat keinerlei
-Netzwerkfunktion. Wer sie einsetzt, sollte dennoch die eigenen Datenschutzvorgaben prüfen
-und die Datendateien nicht versehentlich in ein öffentliches Repository legen –
-die beiliegende `.gitignore` verhindert das für die üblichen Dateinamen.
+ausschließlich lokal gespeichert und niemals irgendwohin übertragen.
+
+**Die Seite stellt keine einzige Verbindung nach außen her.** Keine Schriften von Google
+Fonts, keine CDNs, keine Analyse-Skripte, kein `fetch`. Es werden ausschließlich
+Systemschriften verwendet. Damit entsteht auch keine Übertragung der IP-Adresse an Dritte,
+die nach der Rechtsprechung zu Google Fonts (LG München I, 3 O 17493/20) problematisch wäre.
+Die App funktioniert vollständig offline.
+
+Wer sie einsetzt, sollte dennoch die eigenen Datenschutzvorgaben prüfen und die Datendateien
+nicht versehentlich in ein öffentliches Repository legen – die beiliegende `.gitignore`
+verhindert das für die üblichen Dateinamen.
 
 ## Technik
 
-Reines HTML, CSS und JavaScript ohne Abhängigkeiten oder Build-Schritt. Eine Datei,
-rund 90 KB. Schriften kommen von Google Fonts, mit Systemschriften als Rückfallebene –
-offline funktioniert alles, es sieht nur etwas anders aus.
+Reines HTML, CSS und JavaScript ohne Abhängigkeiten, Build-Schritt oder externe
+Ressourcen. Eine Datei, rund 90 KB, komplett offline lauffähig.
 
 ## Lizenz
 
