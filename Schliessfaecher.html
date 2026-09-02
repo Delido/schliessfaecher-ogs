@@ -1,0 +1,1887 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Schließfächer OGS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  /* Grundtöne: leicht warmes Grau, vom lackierten Stahl der Schränke abgeleitet */
+  --bg:#f6f5f3; --card:#fff; --card-2:#faf9f7;
+  --ink:#232021; --ink-2:#4b4644; --mut:#7d7773;
+  --line:#e3e0dc; --line-2:#efedea;
+  /* Akzent: Petrol – ruhig, kollidiert nicht mit den Statusfarben */
+  --accent:#1f6f6b; --accent-ink:#fff; --accent-soft:#e8f1f0;
+  /* Status */
+  --frei:#2f7d4f; --frei-bg:#e9f4ec; --frei-line:#bcdcc6;
+  --belegt:#a15c17; --belegt-bg:#fbf1e3; --belegt-line:#ecd6b4;
+  --defekt:#6b6764; --defekt-bg:#eeecea; --defekt-line:#d5d1cd;
+  --warn:#b3261e; --warn-bg:#fbeceb;
+  --pers:#3f5c96; --pers-bg:#eaeff8; --pers-line:#c3d0e8;
+  --shadow:0 1px 2px rgba(35,32,33,.05),0 1px 3px rgba(35,32,33,.04);
+  --shadow-lift:0 4px 14px rgba(35,32,33,.13);
+  --radius:10px;
+  --stickyTop:0px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#191817; --card:#232120; --card-2:#2a2826;
+    --ink:#f0edea; --ink-2:#cfcac6; --mut:#9b948f;
+    --line:#373432; --line-2:#302d2b;
+    --accent:#4ea8a1; --accent-ink:#12211f; --accent-soft:#1d302e;
+    --frei:#69c48a; --frei-bg:#1a2c20; --frei-line:#2f4a37;
+    --belegt:#d9a05a; --belegt-bg:#2e2418; --belegt-line:#4a3a24;
+    --defekt:#9b948f; --defekt-bg:#292726; --defekt-line:#3d3937;
+    --warn:#e8827a; --warn-bg:#33201e;
+    --pers:#8aa8dd; --pers-bg:#1e2637; --pers-line:#33405c;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+    --shadow-lift:0 4px 16px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#191817; --card:#232120; --card-2:#2a2826;
+  --ink:#f0edea; --ink-2:#cfcac6; --mut:#9b948f;
+  --line:#373432; --line-2:#302d2b;
+  --accent:#4ea8a1; --accent-ink:#12211f; --accent-soft:#1d302e;
+  --frei:#69c48a; --frei-bg:#1a2c20; --frei-line:#2f4a37;
+  --belegt:#d9a05a; --belegt-bg:#2e2418; --belegt-line:#4a3a24;
+  --defekt:#9b948f; --defekt-bg:#292726; --defekt-line:#3d3937;
+  --warn:#e8827a; --warn-bg:#33201e;
+  --pers:#8aa8dd; --pers-bg:#1e2637; --pers-line:#33405c;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lift:0 4px 16px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.5 "Source Sans 3",-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- Kopf- und Filterleiste ---------- */
+.topbar{position:sticky;top:0;z-index:30;background:var(--card);border-bottom:1px solid var(--line)}
+header{padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-family:Outfit,"Source Sans 3",sans-serif;font-size:19px;font-weight:600;
+  letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.logo{width:26px;height:26px;border-radius:7px;background:var(--accent);color:var(--accent-ink);
+  display:grid;place-items:center;font-size:14px;flex:none}
+.headright{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto}
+.stats{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:5px 11px;border-radius:7px;font-size:13px;font-weight:600;
+  font-family:Outfit,sans-serif;border:1px solid transparent;white-space:nowrap}
+.pill .num{font-size:14px}
+.pill.f{background:var(--frei-bg);color:var(--frei);border-color:var(--frei-line)}
+.pill.b{background:var(--belegt-bg);color:var(--belegt);border-color:var(--belegt-line)}
+.pill.d{background:var(--defekt-bg);color:var(--defekt);border-color:var(--defekt-line)}
+.pill.g{background:var(--card-2);color:var(--mut);border-color:var(--line)}
+.pill.w{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.engpill{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);
+  border-radius:7px;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:Outfit,sans-serif;white-space:nowrap}
+.engpill:hover{filter:brightness(.97)}
+.hintpill{background:var(--card-2);color:var(--mut);border:1px solid var(--line);
+  border-radius:7px;padding:5px 11px;font-size:12.5px;font-weight:600;cursor:pointer;
+  font-family:Outfit,sans-serif;white-space:nowrap}
+.hintpill:hover{border-color:var(--accent);color:var(--accent)}
+.hintpill.alarm{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.hintpill.alarm:hover{filter:brightness(.97);color:var(--warn)}
+
+/* Segmentierter Ansichtswechsel */
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{border:none;border-radius:0;background:none;padding:8px 13px;font-size:13.5px;
+  color:var(--mut);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button:hover{background:var(--card-2);color:var(--ink)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.seg button.on:hover{background:var(--accent);filter:brightness(1.06)}
+
+/* Menü "Mehr" */
+.menuwrap{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:238px;
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+  box-shadow:var(--shadow-lift);padding:5px;display:flex;flex-direction:column}
+.menu button{border:none;background:none;text-align:left;padding:9px 11px;border-radius:7px;
+  font-weight:500;font-size:13.5px;width:100%}
+.menu button:hover{background:var(--card-2)}
+.msep{height:1px;background:var(--line-2);margin:5px 4px}
+.kpi.w{border-left-color:var(--warn)} .kpi.w .kn{color:var(--warn)}
+.kpi.p{border-left-color:var(--pers)} .kpi.p .kn{color:var(--pers)}
+.lockbar{display:flex;align-items:center;gap:14px;max-width:1440px;margin:16px auto 0;
+  padding:12px 18px;background:var(--belegt-bg);border:1px solid var(--belegt-line);
+  border-radius:var(--radius);width:calc(100% - 40px)}
+.lockicon{font-size:19px;flex:none}
+.locktext{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.locktext b{font-size:14px;color:var(--belegt);font-family:Outfit,sans-serif}
+.locktext span{font-size:12.5px;color:var(--mut)}
+body.locked .cell{cursor:default}
+body.locked .cell:hover{transform:none;box-shadow:none}
+body.locked .cabbtns{display:none}
+body.locked tbody tr{cursor:default!important}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:90;
+  background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:9px;
+  font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lift);max-width:90vw}
+
+.bar{padding:9px 20px;display:flex;gap:7px;flex-wrap:wrap;align-items:center;
+  border-top:1px solid var(--line-2);background:var(--card-2)}
+input,select,button{font:inherit;color:inherit}
+input[type=search],input[type=text],input[type=number],select{
+  padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card);
+  color:var(--ink);min-width:0;transition:border-color .12s,box-shadow .12s}
+input[type=search]:focus,input[type=text]:focus,input[type=number]:focus,select:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input[type=search]{min-width:150px;flex:1 1 190px;max-width:300px}
+select{cursor:pointer}
+button{padding:8px 13px;border:1px solid var(--line);border-radius:8px;background:var(--card);
+  cursor:pointer;font-weight:600;font-size:14px;transition:background .12s,border-color .12s;white-space:nowrap}
+button:hover{background:var(--card-2);border-color:var(--mut)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.primary:hover{filter:brightness(1.08)}
+button.danger{color:var(--warn);border-color:var(--line)}
+button.danger:hover{background:var(--warn-bg);border-color:var(--warn)}
+.spacer{flex:1 1 auto}
+.sstate{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:7px;white-space:nowrap;
+  background:var(--accent-soft);color:var(--accent);border:1px solid transparent}
+.sstate.ok{background:var(--frei-bg);color:var(--frei);border-color:var(--frei-line)}
+.sstate.warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+
+/* ---------- Schrankansicht ---------- */
+main{padding:22px 20px 60px;max-width:1440px;margin:0 auto}
+.grp{margin-bottom:30px}
+.grp h2{font-family:Outfit,sans-serif;font-size:15px;font-weight:600;margin:0 0 12px;
+  display:flex;align-items:baseline;gap:10px;letter-spacing:.01em;
+  padding-bottom:8px;border-bottom:1px solid var(--line)}
+.grp h2 .c{font-size:12.5px;font-weight:400;color:var(--mut);font-family:"Source Sans 3",sans-serif}
+.cabs{display:flex;gap:16px;flex-wrap:wrap}
+.cab{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:11px;box-shadow:var(--shadow)}
+.cab .ch{font-size:12px;color:var(--mut);margin-bottom:9px;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-family:Outfit,sans-serif;letter-spacing:.02em}
+.cabbtns{display:flex;align-items:center;gap:2px;opacity:0;transition:opacity .12s}
+.cab:hover .cabbtns,.cab:focus-within .cabbtns{opacity:1}
+.editcab{border:none;background:none;color:var(--accent);font-size:12px;font-weight:600;
+  padding:3px 7px;cursor:pointer;border-radius:6px}
+.editcab:hover{background:var(--accent-soft)}
+.delcab{border:none;background:none;color:var(--mut);font-size:17px;line-height:1;
+  padding:1px 6px;cursor:pointer;border-radius:6px}
+.delcab:hover{background:var(--warn-bg);color:var(--warn)}
+
+.grid{display:grid;grid-template-columns:repeat(3,112px);grid-auto-rows:72px;gap:5px}
+.cell{border:1px solid var(--line);border-radius:8px;padding:7px 8px 6px 10px;cursor:pointer;
+  overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
+  text-align:left;background:var(--card-2);position:relative;
+  transition:transform .1s,box-shadow .1s,border-color .1s}
+.cell::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--defekt-line);border-radius:8px 0 0 8px}
+.cell:hover{transform:translateY(-1px);box-shadow:var(--shadow-lift);z-index:2}
+.cell.frei{background:var(--frei-bg);border-color:var(--frei-line)}
+.cell.frei::before{background:var(--frei)}
+.cell.belegt{background:var(--belegt-bg);border-color:var(--belegt-line)}
+.cell.belegt::before{background:var(--belegt)}
+.cell.personal{background:var(--pers-bg);border-color:var(--pers-line)}
+.cell.personal::before{background:var(--pers)}
+.cell.personal .n{color:var(--pers)}
+.cell.defekt{background:var(--defekt-bg);border-color:var(--defekt-line);
+  background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.045) 0 5px,transparent 5px 10px)}
+.cell.defekt::before{background:var(--defekt)}
+.cell .n{font-weight:600;font-size:14px;line-height:1.2;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;font-family:Outfit,sans-serif}
+.cell.frei .n{color:var(--frei);font-weight:500}
+.cell.belegt .n{color:var(--belegt)}
+.cell.defekt .n{color:var(--defekt);text-decoration:line-through;font-weight:500}
+.cell .f{font-size:10.5px;color:var(--mut);line-height:1.35}
+.cell .kw{color:var(--warn);font-weight:700}
+.cell .kx{color:var(--mut);font-weight:600}
+.keybox{background:var(--card-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.keyline{display:flex;align-items:center;gap:9px;flex-wrap:nowrap}
+.klabel{font-size:12px;font-weight:600;color:var(--mut);letter-spacing:.02em;flex:none}
+/* Breite muss die 100%-Regel des Dialogs schlagen */
+.db .keyline input[type=number]{width:56px;flex:none;text-align:center;font-weight:600;padding:7px 4px}
+.ktxt{font-size:13px;color:var(--mut);flex:none}
+.kinfo{font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;margin-left:auto;
+  white-space:nowrap;flex:none}
+.kinfo.good{background:var(--frei-bg);color:var(--frei)}
+.kinfo.bad{background:var(--warn-bg);color:var(--warn)}
+.kinfo.warn{background:var(--belegt-bg);color:var(--belegt)}
+.gast{display:inline-block;background:var(--pers);color:var(--card);border-radius:4px;
+  font-size:9px;font-weight:700;padding:0 3px;vertical-align:middle;line-height:13px}
+.cell.hit{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.cell.dim{opacity:.28}
+
+/* ---------- Listenansicht ---------- */
+.tblwrap{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow)}
+table{width:100%;border-collapse:separate;border-spacing:0}
+th,td{padding:9px 14px;text-align:left;border-bottom:1px solid var(--line-2);font-size:14px}
+th{background:var(--card-2);font-weight:600;cursor:pointer;user-select:none;color:var(--ink-2);
+  font-family:Outfit,sans-serif;font-size:12.5px;letter-spacing:.02em;
+  position:sticky;top:var(--stickyTop);z-index:10;box-shadow:inset 0 -1px 0 var(--line)}
+th:hover{color:var(--accent)}
+tbody tr:last-child td{border-bottom:none}
+thead tr:first-child th:first-child{border-top-left-radius:var(--radius)}
+thead tr:first-child th:last-child{border-top-right-radius:var(--radius)}
+tbody tr:hover td{background:var(--card-2)}
+.tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12.5px;font-weight:600;
+  border:1px solid transparent;font-family:Outfit,sans-serif}
+.tag.f{background:var(--frei-bg);color:var(--frei);border-color:var(--frei-line)}
+.tag.b{background:var(--belegt-bg);color:var(--belegt);border-color:var(--belegt-line)}
+.tag.d{background:var(--defekt-bg);color:var(--defekt);border-color:var(--defekt-line)}
+.tag.p{background:var(--pers-bg);color:var(--pers);border-color:var(--pers-line)}
+.ok{color:var(--frei)}
+.no{color:var(--warn);font-weight:700}
+
+/* ---------- Dialoge ---------- */
+dialog{border:none;border-radius:14px;padding:0;background:var(--card);color:var(--ink);
+  box-shadow:0 24px 70px rgba(0,0,0,.28);width:min(460px,calc(100vw - 32px));max-width:none}
+dialog::backdrop{background:rgba(25,24,23,.5);backdrop-filter:blur(2px)}
+.dh{padding:14px 20px;border-bottom:1px solid var(--line);font-weight:600;font-size:16px;
+  font-family:Outfit,sans-serif;display:flex;flex-direction:column;gap:3px}
+.dsub{font-size:12px;font-weight:400;color:var(--mut);font-family:"Source Sans 3",sans-serif}
+.db{padding:16px 20px;display:flex;flex-direction:column;gap:13px;max-height:min(74vh,640px);overflow-y:auto}
+.chkline{display:flex;flex-direction:column;gap:9px;background:var(--card-2);
+  border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.cmini{font-weight:400;color:var(--mut);font-size:12.5px}
+#dMore{border-top:1px solid var(--line-2);padding-top:11px}
+#dMore summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--accent);
+  list-style:none;padding:2px 0;user-select:none}
+#dMore summary::-webkit-details-marker{display:none}
+#dMore summary::before{content:"▸ ";font-size:11px}
+#dMore[open] summary::before{content:"▾ "}
+.dmore{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+.df{padding:13px 20px;border-top:1px solid var(--line);display:flex;gap:8px;
+  justify-content:flex-end;background:var(--card-2);flex-wrap:wrap;
+  border-radius:0 0 14px 14px}
+.df .spacer{flex:1 1 auto}
+label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:5px;
+  letter-spacing:.02em}
+.db input[type=text]{width:100%}
+.fld label{display:block}
+.lmini{font-weight:400;color:var(--mut)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>div{flex:1 1 140px;min-width:0}
+.chk{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500;color:var(--ink);
+  margin:0;letter-spacing:0;cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex:none}
+.meta{background:var(--card-2);border:1px solid var(--line-2);border-radius:8px;
+  padding:10px 12px;font-size:13px;color:var(--mut);line-height:1.65}
+.meta b{color:var(--ink);font-weight:600}
+.dsub b{color:var(--ink-2);font-weight:600}
+.defekt-box{background:var(--card-2);border:1px solid var(--line);border-radius:8px;padding:11px 12px}
+.hint{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.45}
+.hide{display:none!important}
+.startcard{max-width:540px;width:100%;margin:44px auto;box-sizing:border-box;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:24px 24px 20px;box-shadow:var(--shadow)}
+.startcard h2{font-family:Outfit,sans-serif;font-size:18px;margin:0 0 18px;font-weight:600;text-align:center}
+.startopts{display:flex;flex-direction:column;gap:10px}
+.startopt{display:block;text-align:left;width:100%;box-sizing:border-box;
+  padding:13px 15px;border:1px solid var(--line);border-radius:9px;background:var(--card-2);
+  cursor:pointer;font-weight:400;font:inherit;color:inherit;
+  white-space:normal;overflow-wrap:anywhere;
+  transition:border-color .12s,background .12s}
+.startopt:hover{border-color:var(--accent);background:var(--accent-soft)}
+.so-t{display:block;font-family:Outfit,sans-serif;font-size:14.5px;font-weight:600;
+  color:var(--ink);margin-bottom:3px}
+.so-d{display:block;font-size:12.5px;color:var(--mut);line-height:1.5;white-space:normal}
+.startopt code{background:var(--card);border:1px solid var(--line);border-radius:4px;
+  padding:0 4px;font-size:11.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.startcard code{background:var(--card-2);border:1px solid var(--line);border-radius:5px;
+  padding:1px 5px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.empty{padding:56px 20px;text-align:center;color:var(--mut);
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+
+
+/* ---------- Auswertung ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow);border-left:3px solid var(--line)}
+.kpi.f{border-left-color:var(--frei)} .kpi.b{border-left-color:var(--belegt)}
+.kpi.d{border-left-color:var(--defekt)}
+.kn{font-family:Outfit,sans-serif;font-size:27px;font-weight:600;line-height:1.1;letter-spacing:-.02em}
+.kpi.f .kn{color:var(--frei)} .kpi.b .kn{color:var(--belegt)} .kpi.d .kn{color:var(--defekt)}
+.kt{font-size:12.5px;color:var(--mut);margin-top:3px}
+.scard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;box-shadow:var(--shadow);margin-bottom:16px}
+.scard h3{font-family:Outfit,sans-serif;font-size:14px;font-weight:600;margin:0 0 12px;
+  letter-spacing:.01em;padding-bottom:9px;border-bottom:1px solid var(--line-2)}
+.scard .tblwrap{border:none;box-shadow:none;background:none}
+.scard table th{background:none;position:static;box-shadow:none;border-bottom:1px solid var(--line-2)}
+.scols{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px}
+.ssub{font-size:12px;font-weight:600;color:var(--mut);margin:14px 0 7px;
+  font-family:Outfit,sans-serif;letter-spacing:.02em}
+.ssub:first-child{margin-top:0}
+.lrow{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:7px 0;border-bottom:1px solid var(--line-2);font-size:13.5px}
+.lrow:last-child{border-bottom:none}
+.sub{color:var(--mut);font-size:12px}
+.muted{color:var(--mut);font-size:13px;padding:4px 0;line-height:1.55}
+td.num,th.num{text-align:right;white-space:nowrap}
+td.wbar{width:34%;min-width:120px}
+.sbar{display:flex;height:9px;border-radius:5px;overflow:hidden;background:var(--line-2)}
+.sb{display:block;height:100%}
+.sb.f{background:var(--frei)} .sb.b{background:var(--belegt)} .sb.d{background:var(--defekt)}
+.legend{display:flex;gap:16px;margin-top:11px;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+.sw.f{background:var(--frei)} .sw.b{background:var(--belegt)} .sw.d{background:var(--defekt)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;
+  background:var(--mut);vertical-align:middle}
+.dot.ein{background:var(--belegt)} .dot.aus{background:var(--frei)}
+
+/* ---------- Verlauf im Fach-Dialog ---------- */
+.vlauf{background:var(--card-2);border:1px solid var(--line-2);border-radius:8px;padding:10px 12px}
+.vtitle{font-size:11.5px;font-weight:600;color:var(--mut);margin-bottom:7px;
+  font-family:Outfit,sans-serif;letter-spacing:.03em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vclear{border:none;background:none;color:var(--mut);font-size:11px;font-weight:600;
+  cursor:pointer;padding:2px 6px;border-radius:5px;text-transform:none;letter-spacing:0;
+  font-family:"Source Sans 3",sans-serif}
+.vclear:hover{background:var(--warn-bg);color:var(--warn)}
+.vdel{border:none;background:none;color:var(--mut);font-size:15px;line-height:1;
+  cursor:pointer;padding:0 5px;border-radius:5px;flex:none}
+.vdel:hover{background:var(--warn-bg);color:var(--warn)}
+.vrow{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0}
+.vrow .vname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vname{font-weight:600}
+.vdate{color:var(--mut);font-size:12px;white-space:nowrap}
+.vmore{font-size:12px;color:var(--mut);margin-top:5px}
+
+/* ---------- Hilfe ---------- */
+.help{font-size:14px;line-height:1.62}
+.help h3{font-family:Outfit,sans-serif;font-size:14px;font-weight:600;margin:20px 0 7px;
+  color:var(--accent)}
+.help h3:first-child{margin-top:0}
+.help p{margin:0 0 9px}
+.help code{background:var(--card-2);border:1px solid var(--line);border-radius:5px;
+  padding:1px 5px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.lg{display:inline-block;padding:1px 7px;border-radius:5px;font-size:12px;font-weight:600;
+  border:1px solid transparent}
+.lg.f{background:var(--frei-bg);color:var(--frei);border-color:var(--frei-line)}
+.lg.b{background:var(--belegt-bg);color:var(--belegt);border-color:var(--belegt-line)}
+.lg.d{background:var(--defekt-bg);color:var(--defekt);border-color:var(--defekt-line)}
+.warnbox{background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;
+  padding:9px 11px;font-size:13px}
+#dlgHelp{width:min(560px,calc(100vw - 32px))}
+#dlgHelp .db{max-height:min(66vh,600px);overflow-y:auto}
+
+@media print{
+  .topbar{display:none}
+  body{background:#fff}
+  .cell,.cab,.scard,.kpi{break-inside:avoid;box-shadow:none}
+  th{position:static}
+  main{padding:0;max-width:none}
+}
+@media(max-width:700px){
+  header,.bar{padding:10px 12px}
+  main{padding:14px 12px 40px}
+  .grid{grid-template-columns:repeat(3,minmax(78px,1fr))}
+  .cab{flex:1 1 100%}
+  .headright{margin-left:0;width:100%}
+  .stats{width:100%}
+  .seg{width:100%}
+  .seg button{flex:1}
+  .menu{right:auto;left:0}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <header>
+    <h1><span class="logo">&#128273;</span> Schlie&szlig;f&auml;cher OGS</h1>
+    <div class="headright">
+      <span id="engpass"></span>
+      <span id="backupHint"></span>
+      <div class="stats" id="stats"></div>
+    </div>
+  </header>
+  <div class="bar noprint">
+    <div class="seg" role="group" aria-label="Ansicht">
+      <button id="segPlan" class="on">Schränke</button>
+      <button id="segList">Liste</button>
+      <button id="segStats">Auswertung</button>
+    </div>
+    <input type="search" id="q" placeholder="Suchen: Name, Fach, Schloss…" autocomplete="off">
+    <select id="fGruppe" aria-label="Gruppe"><option value="">Alle Gruppen</option></select>
+    <select id="fStatus" aria-label="Status">
+      <option value="">Alle Fächer</option>
+      <option value="frei">Nur freie</option>
+      <option value="belegt">Nur belegte</option>
+      <option value="defekt">Nur defekte</option>
+      <option value="personal">Nur Personal / Sonderzweck</option>
+      <option value="problem">Schlüssel fehlt</option>
+    </select>
+    <span class="spacer"></span>
+    <button id="btnUndo" class="hide" title="Rückgängig">↶ Rückgängig</button>
+    <span id="saveState" class="sstate" title="Speicherort">Speicher wird geprüft…</span>
+    <button id="btnConnect" class="primary hide"></button>
+    <div class="menuwrap">
+      <button id="btnMore" aria-haspopup="true" aria-expanded="false">Mehr ▾</button>
+      <div id="moreMenu" class="menu hide" role="menu">
+        <button id="btnNew" role="menuitem"><span>Schrank anlegen</span></button>
+        <div class="msep"></div>
+        <button id="btnExport" role="menuitem"><span>Sicherungskopie speichern</span></button>
+        <button id="btnCsv" role="menuitem"><span>Als CSV für Excel</span></button>
+        <div class="msep"></div>
+        <button id="btnReset" role="menuitem"><span>Neu beginnen (Daten zurücksetzen)</span></button>
+        <button id="btnImport" role="menuitem"><span>Sicherung laden</span></button>
+        <button id="btnPrint" role="menuitem"><span>Drucken</span></button>
+        <div class="msep"></div>
+        <button id="btnTheme" role="menuitem"><span>Ansicht: System</span></button>
+        <button id="btnHelp" role="menuitem"><span>Hilfe / Anleitung</span></button>
+      </div>
+    </div>
+    <input type="file" id="file" accept=".json" class="hide">
+  </div>
+</div>
+
+<div id="lockBar" class="lockbar hide">
+  <span class="lockicon">&#128274;</span>
+  <div class="locktext">
+    <b>Nur Ansicht &ndash; Bearbeiten ist gesperrt</b>
+    <span>Zum &Auml;ndern muss die Datei einmal freigegeben werden. Suchen und Nachschauen geht auch so.</span>
+  </div>
+  <button id="btnLockConnect" class="primary">Datei freigeben</button>
+</div>
+
+<div id="toast" class="toast hide"></div>
+
+<main>
+  <div id="viewPlan"></div>
+  <div id="viewList" class="hide"></div>
+  <div id="viewStats" class="hide"></div>
+</main>
+
+<dialog id="dlgLock">
+  <form method="dialog">
+    <div class="dh">Bearbeiten gesperrt</div>
+    <div class="db">
+      <div class="meta" id="lockFach"></div>
+      <p style="margin:0;font-size:14px;line-height:1.6">
+        Damit keine Änderungen verloren gehen, muss zuerst die Datei
+        <b>Schliessfaecher_Daten.json</b> freigegeben werden. Danach wird alles,
+        was du änderst, sofort dort gespeichert.
+      </p>
+      <div class="hint">Das ist nach jedem Start des Browsers einmal nötig –
+        eine Sicherheitsregel des Browsers bei Dateien, die per Doppelklick geöffnet werden.</div>
+    </div>
+    <div class="df">
+      <button value="cancel">Nur ansehen</button>
+      <button type="button" id="btnLockConnect2" class="primary">Datei freigeben</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgHelp">
+  <form method="dialog">
+    <div class="dh">Kurzanleitung</div>
+    <div class="db" id="helpBody"></div>
+    <div class="df"><button value="cancel" class="primary">Schließen</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgNew">
+  <form method="dialog">
+    <div class="dh" id="nTitle">Neuen Schrank anlegen</div>
+    <div class="db">
+      <div>
+        <label for="nGruppe">Gruppe</label>
+        <input type="text" id="nGruppe" list="grpList" placeholder="z. B. Bärengruppe" autocomplete="off">
+        <datalist id="grpList"></datalist>
+        <div class="hint">Vorhandene Gruppe wählen oder neue eintippen.</div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="nSchrank">Schranknummer</label>
+          <input type="text" id="nSchrank" placeholder="z. B. 7145" autocomplete="off">
+        </div>
+        <div id="nAnzahlBox">
+          <label for="nAnzahl">Anzahl Fächer</label>
+          <input type="number" id="nAnzahl" value="12" min="1" max="60">
+        </div>
+      </div>
+      <div class="hint" id="nHintNew">Die Fächer werden leer angelegt. Fach- und Schlossnummer trägst du
+        anschließend bei jedem Fach selbst ein (Fach anklicken).</div>
+      <div class="hint hide" id="nHintEdit"></div>
+      <div id="nErr" class="hint" style="color:var(--warn);font-weight:600"></div>
+    </div>
+    <div class="df">
+      <button type="button" id="nDelete" class="danger hide">Schrank löschen</button>
+      <span class="spacer"></span>
+      <button value="cancel">Abbrechen</button>
+      <button type="button" id="nSave" class="primary">Schrank anlegen</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg">
+  <form method="dialog">
+    <div class="dh"><span id="dTitle">Fach bearbeiten</span><span class="dsub" id="dMeta"></span></div>
+    <div class="db">
+
+      <div class="fld">
+        <label for="dName">Name des Kindes</label>
+        <input type="text" id="dName" placeholder="leer lassen = Fach ist frei" autocomplete="off">
+      </div>
+
+      <div class="keybox">
+        <div class="keyline">
+          <span class="klabel">Schlüssel</span>
+          <input type="number" id="dSchlDa" min="0" max="20" inputmode="numeric" aria-label="vorhanden">
+          <span class="ktxt">von</span>
+          <input type="number" id="dSchlSoll" min="0" max="20" inputmode="numeric" aria-label="gehören zum Fach">
+          <span id="dSchlInfo" class="kinfo"></span>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label for="dNotiz">Notiz</label>
+        <input type="text" id="dNotiz" placeholder="z. B. Ersatzschlüssel im Büro" autocomplete="off">
+      </div>
+
+      <div class="chkline">
+        <label class="chk"><input type="checkbox" id="dPersonal"> Kein Kind <span class="cmini">(Personal, Ersatzschlüssel, Technik)</span></label>
+        <label class="chk"><input type="checkbox" id="dDefekt"> Fach ist defekt <span class="cmini">(nicht vergebbar)</span></label>
+      </div>
+
+      <details id="dMore">
+        <summary>Weitere Angaben</summary>
+        <div class="dmore">
+          <div class="fld">
+            <label for="dHeim">Kind gehört zu Gruppe <span class="lmini">(nur falls abweichend)</span></label>
+            <input type="text" id="dHeim" list="grpList2" placeholder="leer = Gruppe des Schranks" autocomplete="off">
+            <datalist id="grpList2"></datalist>
+          </div>
+          <div class="row">
+            <div class="fld">
+              <label for="dFach">Fachnummer</label>
+              <input type="text" id="dFach" autocomplete="off">
+            </div>
+            <div class="fld">
+              <label for="dSchloss">Schlossnummer</label>
+              <input type="text" id="dSchloss" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <div id="dVerlauf"></div>
+    </div>
+    <div class="df">
+      <button type="button" id="dFree" class="danger">Fach freigeben</button>
+      <span class="spacer"></span>
+      <button value="cancel">Abbrechen</button>
+      <button type="button" id="dSave" class="primary">Speichern</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const SEED = [];
+const KEY = 'ogs_schliessfaecher_v1';
+let data, view = 'plan', current = null;
+
+function normalize(arr){
+  let n = 0;
+  for(const l of arr){
+    if(typeof l.name !== 'string') l.name = '';
+    if(typeof l.defekt === 'undefined'){ l.defekt = false; n++; }
+    if(typeof l.notiz === 'undefined') l.notiz = '';
+    if(!Array.isArray(l.verlauf)) l.verlauf = [];
+    if(typeof l.heim === 'undefined'){
+      // Alt-Schreibweise "Name (Gruppe)" in ein eigenes Feld überführen
+      const m = l.name.trim().match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+      if(m){
+        const voll = arr.map(x => x.gruppe);
+        const treffer = voll.find(g => g.toLowerCase().indexOf(m[2].trim().toLowerCase()) === 0);
+        l.name = m[1].trim();
+        l.heim = treffer || m[2].trim();
+      } else l.heim = '';
+    }
+    // Schlüssel: aus altem k1/k2/extra auf Soll/Ist umstellen
+    if(typeof l.schlSoll === 'undefined'){
+      const extra = Number(l.extra) || 0;
+      const da = (l.k1 ? 1 : 0) + (l.k2 ? 1 : 0) + extra;
+      // Soll: normal zwei, plus vorhandene Zusatzschlüssel; nie kleiner als das, was da ist
+      l.schlSoll = Math.max(2 + extra, da);
+      l.schlDa = da;
+    }
+    if(typeof l.personal === 'undefined')
+      l.personal = /sozp(ä|ae)d|notschl(ü|ue)ssel|^pc$|erzieher|leitung|b(ü|ue)ro/i.test(l.name.trim());
+    if(!l.id) l.id = 'n' + (Date.now() + (n++));
+  }
+  return arr;
+}
+function load(){
+  try{ const s = localStorage.getItem(KEY); if(s){ data = normalize(JSON.parse(s)); return; } }catch(e){}
+  data = [];   // kein eingebauter Bestand – Daten kommen aus Datei oder Sicherung
+}
+/* ---------- Rückgängig ---------- */
+let undoStack = [];
+function snapshot(label){
+  undoStack.push({label: label, data: JSON.stringify(data)});
+  if(undoStack.length > 20) undoStack.shift();
+  updateUndo();
+}
+function updateUndo(){
+  const b = document.getElementById('btnUndo');
+  if(!b) return;
+  b.classList.toggle('hide', undoStack.length === 0);
+  if(undoStack.length) b.title = 'Rückgängig: ' + undoStack[undoStack.length - 1].label;
+}
+function undo(){
+  const u = undoStack.pop();
+  if(!u) return;
+  data = normalize(JSON.parse(u.data));
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+  scheduleWrite();
+  refreshGroupFilter();
+  render();
+  updateUndo();
+  toast('Rückgängig gemacht: ' + u.label);
+}
+
+/* ---------- Kurzmeldung ---------- */
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hide');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hide'), 3200);
+}
+
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+  scheduleWrite();
+}
+const isDefekt = l => !!l.defekt;
+const isFrei = l => !l.defekt && !l.name.trim();
+const isBelegt = l => !l.defekt && !!l.name.trim();
+const isPersonal = l => isBelegt(l) && !!l.personal;
+const isKind = l => isBelegt(l) && !l.personal;
+const problem = l => !l.defekt && (Number(l.schlDa) || 0) < (Number(l.schlSoll) || 0);
+const fehlend = l => Math.max(0, (Number(l.schlSoll) || 0) - (Number(l.schlDa) || 0));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function measureSticky(){
+  const t = document.querySelector('.topbar');
+  if(!t) return;
+  document.documentElement.style.setProperty('--stickyTop', Math.round(t.getBoundingClientRect().height) + 'px');
+}
+
+function matches(l){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const g = document.getElementById('fGruppe').value;
+  const s = document.getElementById('fStatus').value;
+  if(g && l.gruppe !== g) return false;
+  if(s === 'frei' && !isFrei(l)) return false;
+  if(s === 'belegt' && !isBelegt(l)) return false;
+  if(s === 'defekt' && !isDefekt(l)) return false;
+  if(s === 'personal' && !isPersonal(l)) return false;
+  if(s === 'problem' && !problem(l)) return false;
+  if(q && !(l.name+' '+l.fach+' '+l.schloss+' '+l.schrank+' '+l.gruppe+' '+(l.heim||'')+' '+(l.notiz||'')).toLowerCase().includes(q)) return false;
+  return true;
+}
+
+function renderStats(){
+  const vis = data.filter(matches);
+  const frei = vis.filter(isFrei).length;
+  const belegt = vis.filter(isBelegt).length;
+  const defekt = vis.filter(isDefekt).length;
+  const prob = vis.filter(problem).length;
+  const fehlSumme = vis.reduce((n, l) => n + (problem(l) ? fehlend(l) : 0), 0);
+  const keyText = prob === 1 ? 'Fach: ' + fehlSumme + ' Schlüssel fehlt'
+    : 'Fächer: ' + fehlSumme + ' Schlüssel fehlen';
+  const P = (cls, n, t) => '<span class="pill ' + cls + '"><span class="num">' + n + '</span> ' + t + '</span>';
+  // Gruppen, die fast voll sind – rechtzeitig sichtbar machen
+  const eng = [...new Set(data.map(l => l.gruppe))]
+    .map(g => ({g: g, frei: data.filter(l => l.gruppe === g && isFrei(l)).length}))
+    .filter(x => x.frei <= 2);
+  const engText = eng.length === 1
+    ? esc(eng[0].g) + ': ' + (eng[0].frei === 0 ? 'kein Fach mehr frei' : 'nur noch ' + eng[0].frei + ' frei')
+    : eng.length + ' Gruppen fast voll';
+  document.getElementById('engpass').innerHTML = eng.length
+    ? '<button id="btnEng" class="engpill" title="' +
+      esc(eng.map(x => x.g + ': ' + x.frei + ' frei').join(' · ')) + '">' + engText + '</button>'
+    : '';
+
+  document.getElementById('stats').innerHTML =
+    P('f', frei, 'frei') + P('b', belegt, 'belegt') +
+    (defekt ? P('d', defekt, 'defekt') : '') +
+    (prob ? '<span class="pill w" title="Fächer, bei denen nicht alle Schlüssel da sind">' +
+      '<span class="num">' + prob + '</span> ' + keyText + '</span>' : '') +
+    '<span class="pill g">' + vis.length + ' von ' + data.length + '</span>';
+}
+
+function renderPlan(){
+  const filtering = document.getElementById('q').value.trim() ||
+                    document.getElementById('fStatus').value ||
+                    document.getElementById('fGruppe').value;
+  const groups = [...new Set(data.map(l => l.gruppe))];
+  let html = '';
+  for(const g of groups){
+    if(document.getElementById('fGruppe').value && document.getElementById('fGruppe').value !== g) continue;
+    const inG = data.filter(l => l.gruppe === g);
+    const cabs = [...new Set(inG.map(l => l.schrank))];
+    const nFrei = inG.filter(isFrei).length;
+    let cabHtml = '', anyVisible = false;
+    for(const c of cabs){
+      const cells = inG.filter(l => l.schrank === c);
+      const cFrei = cells.filter(isFrei).length;
+      const cDef = cells.filter(isDefekt).length;
+      let g2 = '';
+      for(const l of cells){
+        const hit = matches(l);
+        if(hit) anyVisible = true;
+        const cls = (isDefekt(l) ? 'defekt' : isFrei(l) ? 'frei' : isPersonal(l) ? 'personal' : 'belegt') +
+                    (filtering ? (hit ? ' hit' : ' dim') : '');
+        const label = isDefekt(l) ? 'defekt' : isFrei(l) ? 'frei' : esc(l.name);
+        g2 += '<button class="cell ' + cls + '" data-id="' + esc(l.id) + '">' +
+              '<div class="n">' + label +
+              (l.heim && l.heim !== l.gruppe ? ' <span class="gast" title="gehört zu ' + esc(l.heim) + '">G</span>' : '') +
+              '</div>' +
+              '<div class="f">' + (l.fach ? esc(l.fach) : '<em>ohne Nr.</em>') +
+              (l.schloss ? ' · Schloss ' + esc(l.schloss) : '') +
+              (problem(l) ? ' <span class="kw">' + fehlend(l) + ' Schl. fehlt</span>' : '') +
+              (!problem(l) && (Number(l.schlSoll) || 0) > 2 ?
+                ' <span class="kx">' + l.schlSoll + ' Schl.</span>' : '') +
+              (l.notiz ? ' <span class="kw" title="' + esc(l.notiz) + '">Notiz</span>' : '') +
+              '</div></button>';
+      }
+      cabHtml += '<div class="cab"><div class="ch"><span>Schrank ' + esc(c) + ' · ' + cFrei + ' frei' +
+                 (cDef ? ' · ' + cDef + ' defekt' : '') + '</span>' +
+                 '<span class="cabbtns noprint">' +
+                 '<button class="editcab" title="Schrank bearbeiten (Gruppe, Nummer)" data-g="' + esc(g) +
+                 '" data-c="' + esc(c) + '">Bearbeiten</button>' +
+                 '<button class="delcab" title="Schrank löschen" data-g="' + esc(g) +
+                 '" data-c="' + esc(c) + '">×</button></span></div>' +
+                 '<div class="grid">' + g2 + '</div></div>';
+    }
+    if(filtering && !anyVisible) continue;
+    html += '<section class="grp"><h2>' + esc(g) + ' <span class="c">' + inG.length +
+            ' Fächer · ' + nFrei + ' frei</span></h2><div class="cabs">' + cabHtml + '</div></section>';
+  }
+  if(!data.length){
+    document.getElementById('viewPlan').innerHTML =
+      '<div class="startcard">' +
+        '<h2>Womit möchtest du starten?</h2>' +
+        '<div class="startopts">' +
+
+          '<button class="startopt" id="startConnect">' +
+            '<span class="so-t">Vorhandene Fächer öffnen</span>' +
+            '<span class="so-d">Die Datei <code>Schliessfaecher_Daten.json</code> aus eurem Ordner. ' +
+            'Der normale Weg, wenn schon jemand mit der App gearbeitet hat.</span>' +
+          '</button>' +
+
+          '<button class="startopt" id="startImport">' +
+            '<span class="so-t">Sicherungskopie einlesen</span>' +
+            '<span class="so-d">Eine Datei wie <code>schliessfaecher_JJJJ-MM-TT.json</code> – ' +
+            'zum Wiederherstellen oder um den Stand von einem anderen Rechner zu übernehmen.</span>' +
+          '</button>' +
+
+          '<button class="startopt" id="startNew">' +
+            '<span class="so-t">Von vorn anfangen</span>' +
+            '<span class="so-d">Noch keine Daten vorhanden: den ersten Schrank selbst anlegen.</span>' +
+          '</button>' +
+
+        '</div>' +
+      '</div>';
+    return;
+  }
+  document.getElementById('viewPlan').innerHTML = html || '<div class="empty">Keine Treffer.</div>';
+}
+
+let sortKey = 'fach', sortDir = 1;
+function renderList(){
+  const rows = data.filter(matches).sort((a, b) => {
+    const A = (a[sortKey] || '').toString().toLowerCase();
+    const B = (b[sortKey] || '').toString().toLowerCase();
+    return (A < B ? -1 : A > B ? 1 : 0) * sortDir;
+  });
+  const th = (k, t) => '<th data-k="' + k + '">' + t + (sortKey === k ? (sortDir > 0 ? ' ▲' : ' ▼') : '') + '</th>';
+  document.getElementById('viewList').innerHTML = rows.length ?
+    '<div class="tblwrap"><table><thead><tr>' + th('gruppe','Gruppe') + th('schrank','Schrank') + th('fach','Fach') +
+    th('schloss','Schloss') + th('name','Name') + '<th>Schlüssel</th><th>Notiz</th></tr></thead><tbody>' +
+    rows.map(l => '<tr data-id="' + esc(l.id) + '" style="cursor:pointer">' +
+      '<td>' + esc(l.gruppe) + '</td><td>' + esc(l.schrank) + '</td><td>' + esc(l.fach) + '</td>' +
+      '<td>' + esc(l.schloss) + '</td><td>' +
+      (isDefekt(l) ? '<span class="tag d">defekt</span>' :
+       isFrei(l) ? '<span class="tag f">frei</span>' :
+       '<span class="tag ' + (isPersonal(l) ? 'p' : 'b') + '">' + esc(l.name) + '</span>') +
+      '</td><td>' + (isDefekt(l) ? '<span style="color:var(--mut)">–</span>' :
+        '<span class="' + (problem(l) ? 'no' : 'ok') + '">' + (Number(l.schlDa) || 0) + '</span>' +
+        '<span style="color:var(--mut)"> von ' + (Number(l.schlSoll) || 0) + '</span>') + '</td>' +
+      '<td>' + esc(l.notiz || '') + '</td></tr>').join('') +
+    '</tbody></table></div>' : '<div class="empty">Keine Treffer.</div>';
+}
+
+const UIKEY = 'ogs_ui_v1';
+function saveUI(){
+  try{
+    localStorage.setItem(UIKEY, JSON.stringify({
+      view: view,
+      q: document.getElementById('q').value,
+      gruppe: document.getElementById('fGruppe').value,
+      status: document.getElementById('fStatus').value,
+      sortKey: sortKey, sortDir: sortDir
+    }));
+  }catch(e){}
+}
+function applyUI(){
+  let u = null;
+  try{ u = JSON.parse(localStorage.getItem(UIKEY) || 'null'); }catch(e){}
+  if(!u){ setView('plan'); return; }
+  document.getElementById('q').value = u.q || '';
+  if(u.gruppe) document.getElementById('fGruppe').value = u.gruppe;
+  if(u.status) document.getElementById('fStatus').value = u.status;
+  if(u.sortKey) sortKey = u.sortKey;
+  if(typeof u.sortDir === 'number') sortDir = u.sortDir;
+  setView(['list','stats'].includes(u.view) ? u.view : 'plan');
+}
+function setView(v){
+  view = v;
+  document.getElementById('segPlan').classList.toggle('on', v === 'plan');
+  document.getElementById('segList').classList.toggle('on', v === 'list');
+  document.getElementById('segStats').classList.toggle('on', v === 'stats');
+  document.getElementById('viewPlan').classList.toggle('hide', v !== 'plan');
+  document.getElementById('viewList').classList.toggle('hide', v !== 'list');
+  document.getElementById('viewStats').classList.toggle('hide', v !== 'stats');
+  // Suche und Statusfilter haben in der Auswertung keine Wirkung
+  document.getElementById('q').classList.toggle('hide', v === 'stats');
+  document.getElementById('fStatus').classList.toggle('hide', v === 'stats');
+}
+
+function render(){
+  measureSticky(); renderStats();
+  if(view === 'plan') renderPlan();
+  else if(view === 'list') renderList();
+  else renderStatsPage();
+  saveUI();
+}
+
+/* ---------- Datei-Speicherung neben der HTML ---------- */
+const FS_SUPPORTED = typeof window.showSaveFilePicker === 'function';
+const DB_NAME = 'ogs_fs', STORE = 'handles', HANDLE_KEY = 'datafile';
+let fileHandle = null, saveTimer = null;
+let ungesichert = false;   // Änderungen, die noch in keiner Datei stehen
+
+// Solange keine Datei verbunden ist, darf gelesen, aber nicht geändert werden.
+// So kann niemand Änderungen machen, die beim Freigeben verloren gehen.
+function gesperrt(){ return FS_SUPPORTED && !fileHandle; }
+
+function zeigeSperre(){
+  // Statustext an die tatsächliche Lage anpassen
+  if(FS_SUPPORTED && !fileHandle){
+    const el = document.getElementById('saveState');
+    if(el && !/Zurückgesetzt/.test(el.textContent))
+      setState(data.length ? 'Nicht freigegeben' : 'Keine Daten geladen', 'warn');
+  }
+  const an = gesperrt();
+  document.body.classList.toggle('locked', an);
+  const b = document.getElementById('btnNew');
+  if(b) b.disabled = an;
+  // Ohne Daten erklärt der Startbildschirm die Lage – dann keinen zweiten Hinweis zeigen
+  const l = document.getElementById('lockBar');
+  if(l) l.classList.toggle('hide', !an || !data.length);
+  // Balken und Leisten-Knopf sagen dasselbe – nur einer davon
+  const c = document.getElementById('btnConnect');
+  if(c && an) c.classList.add('hide');
+}
+
+function idb(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function idbGet(k){
+  try{
+    const db = await idb();
+    return await new Promise((res, rej) => {
+      const t = db.transaction(STORE, 'readonly').objectStore(STORE).get(k);
+      t.onsuccess = () => res(t.result); t.onerror = () => rej(t.error);
+    });
+  }catch(e){ return undefined; }
+}
+async function idbDel(k){
+  try{
+    const db = await idb();
+    await new Promise((res, rej) => {
+      const t = db.transaction(STORE, 'readwrite').objectStore(STORE).delete(k);
+      t.onsuccess = () => res(); t.onerror = () => rej(t.error);
+    });
+  }catch(e){}
+}
+async function idbSet(k, v){
+  try{
+    const db = await idb();
+    await new Promise((res, rej) => {
+      const t = db.transaction(STORE, 'readwrite').objectStore(STORE).put(v, k);
+      t.onsuccess = () => res(); t.onerror = () => rej(t.error);
+    });
+  }catch(e){}
+}
+
+function setState(text, cls){
+  const el = document.getElementById('saveState');
+  el.textContent = text;
+  el.className = 'sstate' + (cls ? ' ' + cls : '');
+}
+function showConnect(text){
+  const b = document.getElementById('btnConnect');
+  b.textContent = text;
+  // Der Sperrbalken bietet dieselbe Aktion schon prominent an – dann hier nicht doppeln
+  b.classList.toggle('hide', gesperrt());
+}
+
+async function writeFile(){
+  if(!fileHandle) return false;
+  try{
+    const w = await fileHandle.createWritable();
+    await w.write(JSON.stringify(data, null, 1));
+    await w.close();
+    const t = new Date().toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+    setState('Gespeichert in ' + fileHandle.name + ' (' + t + ')', 'ok');
+    ungesichert = false;
+    pruefeBackup();
+    return true;
+  }catch(e){
+    fileHandle = null;
+    setState('Datei nicht beschreibbar', 'warn');
+    zeigeSperre();              // Sperrbalken einblenden ...
+    showConnect('Datei erneut freigeben');   // ... und ggf. den Knopf in der Leiste
+    return false;
+  }
+}
+
+function scheduleWrite(){
+  if(!fileHandle){
+    // Keine Datei verbunden: Änderung liegt nur im Browser
+    if(FS_SUPPORTED && !ungesichert){
+      ungesichert = true;
+      pruefeBackup();
+    }
+    return;
+  }
+  clearTimeout(saveTimer);
+  setState('Speichert…');
+  saveTimer = setTimeout(writeFile, 400);
+}
+
+async function useHandle(h, mayAsk){
+  let perm = await h.queryPermission({mode: 'readwrite'});
+  if(perm !== 'granted' && mayAsk){
+    try{ perm = await h.requestPermission({mode: 'readwrite'}); }catch(e){ perm = 'denied'; }
+  }
+  if(perm !== 'granted') return false;
+  document.getElementById('btnConnect').classList.add('hide');
+
+  // Stand aus der Datei lesen und mit dem aktuellen vergleichen –
+  // niemals ungefragt überschreiben, sonst gehen Änderungen verloren.
+  let ausDatei = null;
+  try{
+    const txt = await (await h.getFile()).text();
+    if(txt.trim()){
+      const d = JSON.parse(txt);
+      if(Array.isArray(d) && d.length && 'fach' in d[0]){ ausDatei = d; }
+    }
+  }catch(e){}
+
+  const gleich = ausDatei && JSON.stringify(normalize(ausDatei)) === JSON.stringify(data);
+
+  if(ausDatei && !gleich){
+    if(ungesichert){
+      // Beide Seiten haben etwas: der Mensch entscheidet.
+      const wahl = confirm(
+        'Achtung – zwei unterschiedliche Stände:\n\n' +
+        'In dieser Sitzung geändert: ' + data.length + ' Fächer\n' +
+        'In der Datei gespeichert:   ' + ausDatei.length + ' Fächer\n\n' +
+        'OK  = meine Änderungen behalten und in die Datei schreiben\n' +
+        'Abbrechen = Stand aus der Datei laden (meine Änderungen verwerfen)');
+      if(!wahl){
+        snapshot('Stand aus Datei geladen');
+        data = normalize(ausDatei);
+        try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+        toast('Stand aus der Datei geladen');
+      }else{
+        toast('Änderungen übernommen und gespeichert');
+      }
+    }else{
+      // Nichts geändert: Datei ist maßgeblich
+      data = normalize(ausDatei);
+      try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+    }
+  }
+
+  fileHandle = h;
+  ungesichert = false;
+  zeigeSperre();
+  refreshGroupFilter();
+  render();
+  await writeFile();
+  pruefeBackup();
+  return true;
+}
+
+async function connectFile(){
+  try{
+    const h = await window.showSaveFilePicker({
+      suggestedName: 'Schliessfaecher_Daten.json',
+      types: [{description: 'Schliessfach-Daten', accept: {'application/json': ['.json']}}]
+    });
+    fileHandle = h;
+    await idbSet(HANDLE_KEY, h);
+    document.getElementById('btnConnect').classList.add('hide');
+    ungesichert = false;
+    zeigeSperre();      // Sperrbalken sofort ausblenden, nicht erst nach Neuladen
+    render();
+    await writeFile();
+    toast('Datei verbunden – Änderungen werden jetzt gespeichert');
+  }catch(e){
+    // Auswahl abgebrochen: Zustand unverändert lassen
+    zeigeSperre();
+  }
+}
+
+async function connectClick(){
+  const h = await idbGet(HANDLE_KEY);
+  if(h && await useHandle(h, true)) return;
+  return connectFile();
+}
+
+async function restoreFile(){
+  // Direkt nach dem Zurücksetzen bewusst keine Datei verbinden –
+  // sonst wären die Daten sofort wieder da.
+  let frisch = false;
+  try{
+    frisch = sessionStorage.getItem('ogs_reset') === '1';
+    if(frisch) sessionStorage.removeItem('ogs_reset');
+  }catch(e){}
+  if(frisch){
+    setState('Zurückgesetzt – Sicherung laden oder neu verbinden', 'warn');
+    showConnect('Datei-Speicherung aktivieren');
+    zeigeSperre();
+    toast('Daten zurückgesetzt. Jetzt über "Mehr → Sicherung laden" eine Kopie einlesen.');
+    return;
+  }
+  if(!FS_SUPPORTED){
+    setState('Nur im Browser gespeichert – bitte regelmäßig sichern', 'warn');
+    return;
+  }
+  const h = await idbGet(HANDLE_KEY);
+  if(!h){
+    setState(data.length ? 'Keine Datei verbunden' : 'Keine Daten geladen', 'warn');
+    if(data.length) showConnect('Datei-Speicherung aktivieren');
+    zeigeSperre();
+    return;
+  }
+  if(await useHandle(h, false)) return;
+  setState('Nicht freigegeben', 'warn');
+  showConnect('Datei freigeben');
+  zeigeSperre();
+}
+
+/* ---------- Auswertung ---------- */
+function renderStatsPage(){
+  const total = data.length;
+  const frei = data.filter(isFrei).length;
+  const belegt = data.filter(isBelegt).length;
+  const defekt = data.filter(isDefekt).length;
+  const prob = data.filter(problem).length;
+  const ohneNr = data.filter(l => !l.fach || !l.schloss).length;
+  const quote = total ? Math.round(belegt / total * 100) : 0;
+
+  const kinder = data.filter(isKind).length;
+  const personal = data.filter(isPersonal).length;
+  const kpi = (n, t, cls) =>
+    '<div class="kpi ' + (cls || '') + '"><div class="kn">' + n + '</div><div class="kt">' + t + '</div></div>';
+
+  // Gruppen
+  const groups = [...new Set(data.map(l => l.gruppe))].map(g => {
+    const inG = data.filter(l => l.gruppe === g);
+    return {
+      name: g,
+      total: inG.length,
+      frei: inG.filter(isFrei).length,
+      belegt: inG.filter(isBelegt).length,
+      kinder: inG.filter(isKind).length,
+      personal: inG.filter(isPersonal).length,
+      defekt: inG.filter(isDefekt).length,
+      prob: inG.filter(problem).length,
+      cabs: new Set(inG.map(l => l.schrank)).size
+    };
+  }).sort((a, b) => b.total - a.total);
+
+  const bar = g => {
+    const p = n => g.total ? (n / g.total * 100) : 0;
+    return '<div class="sbar" title="' + g.belegt + ' belegt, ' + g.frei + ' frei' +
+      (g.defekt ? ', ' + g.defekt + ' defekt' : '') + '">' +
+      '<span class="sb b" style="width:' + p(g.belegt) + '%"></span>' +
+      '<span class="sb f" style="width:' + p(g.frei) + '%"></span>' +
+      '<span class="sb d" style="width:' + p(g.defekt) + '%"></span></div>';
+  };
+
+  const grpRows = groups.map(g =>
+    '<tr><td><b>' + esc(g.name) + '</b><div class="sub">' + g.cabs + ' Schränke</div></td>' +
+    '<td class="wbar">' + bar(g) + '</td>' +
+    '<td class="num"><span class="tag f">' + g.frei + '</span></td>' +
+    '<td class="num"><span class="tag b">' + g.kinder + '</span>' +
+    (g.personal ? ' <span class="tag p">' + g.personal + '</span>' : '') + '</td>' +
+    '<td class="num">' + (g.defekt ? '<span class="tag d">' + g.defekt + '</span>' : '<span class="muted">–</span>') + '</td>' +
+    '<td class="num">' + g.total + '</td></tr>').join('');
+
+  // Schränke mit den meisten freien Fächern
+  const cabs = [];
+  for(const g of [...new Set(data.map(l => l.gruppe))])
+    for(const c of [...new Set(data.filter(l => l.gruppe === g).map(l => l.schrank))]){
+      const cells = data.filter(l => l.gruppe === g && l.schrank === c);
+      cabs.push({g: g, c: c, frei: cells.filter(isFrei).length, total: cells.length});
+    }
+  const freieCabs = cabs.filter(x => x.frei > 0).sort((a, b) => b.frei - a.frei).slice(0, 8);
+  const cabList = freieCabs.length ? freieCabs.map(x =>
+    '<div class="lrow"><span>Schrank <b>' + esc(x.c) + '</b> <span class="sub">' + esc(x.g) + '</span></span>' +
+    '<span class="tag f">' + x.frei + ' frei</span></div>').join('')
+    : '<div class="muted">Kein Schrank hat freie Fächer.</div>';
+
+  // Aufmerksamkeit nötig
+  const probList = data.filter(problem).slice(0, 12).map(l =>
+    '<div class="lrow"><span>Fach <b>' + esc(l.fach || '—') + '</b> <span class="sub">' + esc(l.gruppe) +
+    ' · Schrank ' + esc(l.schrank) + (l.name ? ' · ' + esc(l.name) : '') + '</span></span>' +
+    '<span class="tag d">' + (Number(l.schlDa) || 0) + ' von ' + (Number(l.schlSoll) || 0) + '</span></div>').join('');
+
+  const defektList = data.filter(isDefekt).slice(0, 10).map(l =>
+    '<div class="lrow"><span>Fach <b>' + esc(l.fach || '—') + '</b> <span class="sub">' + esc(l.gruppe) +
+    ' · Schrank ' + esc(l.schrank) + '</span></span>' +
+    '<span class="sub">' + esc(l.notiz || '') + '</span></div>').join('');
+
+  // Letzte Änderungen aus dem Verlauf
+  const ereignisse = [];
+  for(const l of data)
+    for(const e of (l.verlauf || [])){
+      if(e.von) ereignisse.push({d: e.von, txt: esc(e.name) + ' bekommt Fach ' + esc(l.fach || '—'), g: l.gruppe, art: 'ein'});
+      if(e.bis) ereignisse.push({d: e.bis, txt: esc(e.name) + ' gibt Fach ' + esc(l.fach || '—') + ' ab', g: l.gruppe, art: 'aus'});
+    }
+  ereignisse.sort((a, b) => a.d < b.d ? 1 : a.d > b.d ? -1 : 0);
+  const evList = ereignisse.length ? ereignisse.slice(0, 12).map(e =>
+    '<div class="lrow"><span><span class="dot ' + e.art + '"></span>' + e.txt +
+    ' <span class="sub">' + esc(e.g) + '</span></span>' +
+    '<span class="sub">' + datumDE(e.d) + '</span></div>').join('')
+    : '<div class="muted">Noch keine Änderungen aufgezeichnet. Sobald ein Fach neu vergeben oder frei gegeben wird, erscheint es hier.</div>';
+
+  // Datenprüfung: dasselbe Schloss kann real nur an einem Fach hängen
+  const lockMap = {};
+  for(const l of data) if(l.schloss) (lockMap[l.schloss] = lockMap[l.schloss] || []).push(l);
+  const dupLocks = Object.entries(lockMap).filter(e => e[1].length > 1);
+  const dupLockHtml = dupLocks.slice(0, 12).map(e =>
+    '<div class="lrow"><span>Schloss <b>' + esc(e[0]) + '</b> <span class="sub">' +
+    e[1].map(l => esc(l.gruppe) + ' / Fach ' + esc(l.fach || '—')).join(' · ') + '</span></span>' +
+    '<span class="tag d">' + e[1].length + '×</span></div>').join('');
+
+  const nameMap = {};
+  for(const l of data) if(isKind(l)){
+    const k = l.name.trim().toLowerCase();
+    (nameMap[k] = nameMap[k] || []).push(l);
+  }
+  const dupNames = Object.entries(nameMap).filter(e => e[1].length > 1);
+  const dupNameHtml = dupNames.slice(0, 12).map(e =>
+    '<div class="lrow"><span><b>' + esc(e[1][0].name) + '</b> <span class="sub">' +
+    e[1].map(l => esc(l.gruppe) + ' / Fach ' + esc(l.fach || '—')).join(' · ') + '</span></span>' +
+    '<span class="tag d">' + e[1].length + ' Fächer</span></div>').join('');
+
+  const pruefHtml = (dupLocks.length || dupNames.length) ?
+    '<section class="scard"><h3>Prüfen</h3>' +
+      (dupLocks.length ? '<div class="ssub">Schlossnummer mehrfach vergeben (' + dupLocks.length + ')</div>' +
+        '<div class="muted">Ein Schloss kann nur an einem Fach hängen – vermutlich ein Zahlendreher.</div>' +
+        dupLockHtml : '') +
+      (dupNames.length ? '<div class="ssub">Gleicher Name in mehreren Fächern (' + dupNames.length + ')</div>' +
+        '<div class="muted">Kann richtig sein (zwei Kinder mit gleichem Namen) – bitte kurz prüfen.</div>' +
+        dupNameHtml : '') +
+    '</section>' : '';
+
+  document.getElementById('viewStats').innerHTML =
+    '<div class="kpis">' +
+      kpi(frei, 'Fächer frei', 'f') +
+      kpi(kinder, 'an Kinder vergeben', 'b') +
+      (personal ? kpi(personal, 'Personal / Sonderzweck', 'p') : '') +
+      (defekt ? kpi(defekt, 'defekt', 'd') : '') +
+      (prob ? kpi(prob, 'Schlüssel fehlt', 'w') : '') +
+      kpi(quote + '%', 'Auslastung') +
+      kpi(total, 'Fächer gesamt') +
+    '</div>' +
+
+    '<section class="scard"><h3>Belegung nach Gruppe</h3>' +
+      '<div class="tblwrap"><table><thead><tr><th>Gruppe</th><th>Verteilung</th>' +
+      '<th class="num">frei</th><th class="num">Kinder</th><th class="num">defekt</th><th class="num">gesamt</th>' +
+      '</tr></thead><tbody>' + grpRows + '</tbody></table></div>' +
+      '<div class="legend"><span><i class="sw b"></i>belegt</span><span><i class="sw f"></i>frei</span>' +
+      '<span><i class="sw d"></i>defekt</span></div></section>' +
+
+    '<div class="scols">' +
+      '<section class="scard"><h3>Wo ist noch Platz?</h3>' + cabList + '</section>' +
+      '<section class="scard"><h3>Letzte Änderungen</h3>' + evList + '</section>' +
+    '</div>' +
+
+    pruefHtml +
+
+    ((prob || defekt || ohneNr) ?
+      '<section class="scard"><h3>Kümmern</h3>' +
+        (prob ? '<div class="ssub">Fehlende Schlüssel (' + prob + ')</div>' + probList : '') +
+        (defekt ? '<div class="ssub">' + defekt + ' defekte Fächer</div>' + defektList : '') +
+        (ohneNr ? '<div class="ssub">' + ohneNr + ' Fächer ohne Fach- oder Schlossnummer</div>' +
+          '<div class="muted">Diese Fächer wurden neu angelegt – Nummern noch nachtragen.</div>' : '') +
+      '</section>'
+      : '<section class="scard"><h3>Kümmern</h3><div class="muted">Nichts offen – alle Schlüssel da, keine defekten Fächer.</div></section>');
+}
+
+/* ---------- Verlauf: wer hatte das Fach vorher? ---------- */
+function heute(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function datumDE(iso){
+  if(!iso) return '';
+  const p = String(iso).split('-');
+  return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : iso;
+}
+// Belegungswechsel protokollieren: alter Name bekommt ein Enddatum, neuer einen Anfang
+function logChange(l, altName, neuName){
+  if(altName === neuName) return;
+  if(!Array.isArray(l.verlauf)) l.verlauf = [];
+  if(altName){
+    let done = false;
+    for(let i = l.verlauf.length - 1; i >= 0; i--){
+      if(l.verlauf[i].name === altName && !l.verlauf[i].bis){ l.verlauf[i].bis = heute(); done = true; break; }
+    }
+    // Bestand aus der Zeit vor dem Verlauf: Eintrag nachtragen, damit der Name nicht verloren geht
+    if(!done) l.verlauf.push({name: altName, von: '', bis: heute()});
+  }
+  if(neuName) l.verlauf.push({name: neuName, von: heute(), bis: ''});
+  if(l.verlauf.length > 40) l.verlauf = l.verlauf.slice(-40);
+}
+function verlaufHtml(l){
+  const alle = l.verlauf || [];
+  // Index im Originalarray mitführen, damit gezielt gelöscht werden kann
+  const frueher = alle.map((e, i) => ({e: e, i: i})).filter(x => x.e.bis).reverse();
+  if(!frueher.length) return '';
+  return '<div class="vlauf"><div class="vtitle">Vorher in diesem Fach' +
+    '<button type="button" class="vclear" title="Ganzen Verlauf dieses Fachs löschen">Alle löschen</button></div>' +
+    frueher.map(x =>
+      '<div class="vrow"><span class="vname">' + esc(x.e.name) + '</span>' +
+      '<span class="vdate">' + (x.e.von ? datumDE(x.e.von) + ' – ' : 'bis ') + datumDE(x.e.bis) + '</span>' +
+      '<button type="button" class="vdel" data-i="' + x.i + '" title="Diesen Eintrag löschen">&times;</button>' +
+      '</div>').join('') +
+    '</div>';
+}
+
+// Verlauf im offenen Fach-Dialog bearbeiten
+document.addEventListener('click', e => {
+  if(!current || !document.getElementById('dlg').open) return;
+  const del = e.target.closest('.vdel');
+  if(del){
+    e.preventDefault();
+    snapshot('Verlaufseintrag gelöscht');
+    current.verlauf.splice(parseInt(del.dataset.i, 10), 1);
+    save();
+    document.getElementById('dVerlauf').innerHTML = verlaufHtml(current);
+    render();
+    return;
+  }
+  const clr = e.target.closest('.vclear');
+  if(clr){
+    e.preventDefault();
+    if(!confirm('Den kompletten Verlauf dieses Fachs löschen?')) return;
+    snapshot('Verlauf gelöscht');
+    // nur abgeschlossene Einträge entfernen, die laufende Belegung bleibt
+    current.verlauf = (current.verlauf || []).filter(x => !x.bis);
+    save();
+    document.getElementById('dVerlauf').innerHTML = verlaufHtml(current);
+    render();
+  }
+});
+
+/* ---------- Dialog / Events ---------- */
+function openDlg(id){
+  const l = data.find(x => x.id === id);
+  if(!l) return;
+  if(gesperrt()){
+    document.getElementById('lockFach').textContent =
+      'Fach ' + (l.fach || '—') + (l.name ? ' · ' + l.name : '');
+    document.getElementById('dlgLock').showModal();
+    return;
+  }
+  current = l;
+  document.getElementById('dTitle').textContent =
+    isDefekt(l) ? 'Defektes Fach' : isFrei(l) ? 'Freies Fach belegen' : 'Fach bearbeiten';
+  document.getElementById('dMeta').innerHTML = esc(l.gruppe) + ' · Schrank <b>' + esc(l.schrank) +
+    '</b> · Fach <b>' + esc(l.fach || '—') + '</b> · Schloss <b>' + esc(l.schloss || '—') + '</b>';
+  document.getElementById('dFach').value = l.fach || '';
+  document.getElementById('dSchloss').value = l.schloss || '';
+  document.getElementById('dName').value = l.name;
+  document.getElementById('dSchlDa').value = Number(l.schlDa) || 0;
+  document.getElementById('dSchlSoll').value = Number(l.schlSoll) || 0;
+  syncSchl();
+  document.getElementById('dNotiz').value = l.notiz || '';
+  document.getElementById('dDefekt').checked = !!l.defekt;
+  document.getElementById('dPersonal').checked = !!l.personal;
+  document.getElementById('dHeim').value = (l.heim && l.heim !== l.gruppe) ? l.heim : '';
+  document.getElementById('grpList2').innerHTML =
+    [...new Set(data.map(x => x.gruppe))].map(g => '<option value="' + esc(g) + '">').join('');
+  syncDefekt();
+  document.getElementById('dFree').style.display = isBelegt(l) ? '' : 'none';
+  document.getElementById('dMore').open = !!(l.heim && l.heim !== l.gruppe) || !l.fach || !l.schloss;
+  document.getElementById('dVerlauf').innerHTML = verlaufHtml(l);
+  document.getElementById('dlg').showModal();
+  setTimeout(() => { const n = document.getElementById('dName'); if(n.focus) n.focus(); }, 30);
+}
+
+document.addEventListener('click', e => {
+  if(e.target.closest('#startImport')){ document.getElementById('file').click(); return; }
+  if(e.target.closest('#startConnect')){ connectClick(); return; }
+  if(e.target.closest('#startNew')){
+    if(gesperrt()){
+      alert('Zum Anlegen muss zuerst eine Datei verbunden werden.\n\n' +
+        'Klicke auf "Vorhandene Fächer öffnen" und gib dort als Namen ' +
+        'Schliessfaecher_Daten.json an – die Datei wird dann neu angelegt.');
+      return connectClick();
+    }
+    openCabDialog(null);
+    return;
+  }
+  if(e.target.closest('#btnEng')){ setView('stats'); render(); return; }
+  if(e.target.closest('#btnBackupHint')){
+    if(ungesichert && !fileHandle) connectClick();
+    else document.getElementById('btnExport').onclick();
+    return;
+  }
+  const ed = e.target.closest('.editcab');
+  if(ed) return openCabDialog({gruppe: ed.dataset.g, schrank: ed.dataset.c});
+  const del = e.target.closest('.delcab');
+  if(del) return deleteCabinet(del.dataset.g, del.dataset.c);
+  const cell = e.target.closest('.cell');
+  if(cell) return openDlg(cell.dataset.id);
+  const tr = e.target.closest('tbody tr');
+  if(tr) return openDlg(tr.dataset.id);
+  const th = e.target.closest('th[data-k]');
+  if(th){
+    const k = th.dataset.k;
+    sortDir = (k === sortKey) ? -sortDir : 1;
+    sortKey = k;
+    renderList();
+    saveUI();
+  }
+});
+
+function syncSchl(){
+  const da = parseInt(document.getElementById('dSchlDa').value, 10) || 0;
+  const soll = parseInt(document.getElementById('dSchlSoll').value, 10) || 0;
+  const el = document.getElementById('dSchlInfo');
+  if(da < soll){
+    el.textContent = (soll - da === 1) ? '1 fehlt' : (soll - da) + ' fehlen';
+    el.className = 'kinfo bad';
+  }else if(da > soll){
+    el.textContent = (da - soll) + ' mehr als eingetragen';
+    el.className = 'kinfo warn';
+  }else{
+    el.textContent = 'vollständig';
+    el.className = 'kinfo good';
+  }
+}
+for(const id of ['dSchlDa','dSchlSoll'])
+  document.getElementById(id).addEventListener('input', syncSchl);
+
+function syncDefekt(){
+  const d = document.getElementById('dDefekt').checked;
+  const p = document.getElementById('dPersonal').checked;
+  const n = document.getElementById('dName');
+  n.disabled = d;
+  n.style.opacity = d ? .5 : 1;
+  const lab = document.querySelector('label[for="dName"]');
+  if(lab) lab.textContent = p ? 'Bezeichnung' : 'Name des Kindes';
+  n.placeholder = d ? 'nicht vergebbar' : p ? 'z. B. Ersatzschlüssel' : 'leer lassen = Fach ist frei';
+}
+document.getElementById('dDefekt').addEventListener('change', syncDefekt);
+document.getElementById('dPersonal').addEventListener('change', syncDefekt);
+
+document.getElementById('dSave').onclick = () => {
+  const defekt = document.getElementById('dDefekt').checked;
+  const name = document.getElementById('dName').value.trim();
+  if(defekt && name && !confirm('Das Fach ist als defekt markiert. "' + name +
+     '" wird dabei aus dem Fach entfernt.\n\nFortfahren?')) return;
+  snapshot('Fach ' + (current.fach || '—'));
+  const altName = current.name;
+  const neuName = defekt ? '' : name;
+  logChange(current, altName, neuName);
+  current.fach = document.getElementById('dFach').value.trim();
+  current.schloss = document.getElementById('dSchloss').value.trim();
+  current.defekt = defekt;
+  current.personal = document.getElementById('dPersonal').checked && !defekt;
+  const heim = document.getElementById('dHeim').value.trim();
+  current.heim = (heim && heim !== current.gruppe) ? heim : '';
+  current.name = neuName;
+  const soll = Math.max(0, parseInt(document.getElementById('dSchlSoll').value, 10) || 0);
+  const da = Math.max(0, parseInt(document.getElementById('dSchlDa').value, 10) || 0);
+  current.schlSoll = soll;
+  current.schlDa = da;
+  // Altfelder mitführen, damit ältere Sicherungen lesbar bleiben
+  current.k1 = da >= 1; current.k2 = da >= 2; current.extra = Math.max(0, da - 2);
+  current.notiz = document.getElementById('dNotiz').value.trim();
+  save(); render();
+  document.getElementById('dlg').close();
+};
+
+document.getElementById('dFree').onclick = () => {
+  if(!confirm('Fach ' + current.fach + ' wirklich freigeben?\n"' + current.name + '" wird entfernt.')) return;
+  snapshot('Fach ' + (current.fach || '—') + ' freigegeben');
+  logChange(current, current.name, '');
+  current.name = ''; current.notiz = '';
+  save(); render();
+  document.getElementById('dlg').close();
+};
+
+for(const id of ['q','fGruppe','fStatus'])
+  document.getElementById(id).addEventListener('input', render);
+
+for(const [id, v] of [['segPlan','plan'], ['segList','list'], ['segStats','stats']])
+  document.getElementById(id).onclick = () => { setView(v); render(); };
+
+/* ---------- Menü "Mehr" ---------- */
+function closeMenu(){
+  document.getElementById('moreMenu').classList.add('hide');
+  document.getElementById('btnMore').setAttribute('aria-expanded', 'false');
+}
+document.getElementById('btnUndo').onclick = undo;
+document.getElementById('btnLockConnect').onclick = () => connectClick();
+document.getElementById('btnLockConnect2').onclick = () => {
+  document.getElementById('dlgLock').close();
+  connectClick();
+};
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key === 'z' && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){
+    e.preventDefault(); undo();
+  }
+});
+
+document.getElementById('btnMore').onclick = e => {
+  e.stopPropagation();
+  const m = document.getElementById('moreMenu');
+  const open = m.classList.contains('hide');
+  m.classList.toggle('hide', !open);
+  document.getElementById('btnMore').setAttribute('aria-expanded', open ? 'true' : 'false');
+};
+document.addEventListener('click', e => {
+  if(!e.target.closest('.menuwrap')) closeMenu();
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
+
+/* ---------- Neuen Schrank anlegen ---------- */
+function newId(){
+  let n = Date.now(), tries = 0;
+  while(data.some(l => l.id === 'n' + n) && tries++ < 1000) n++;
+  return 'n' + n;
+}
+
+let editCab = null;   // {gruppe, schrank} beim Bearbeiten, sonst null
+
+function refreshGroupFilter(){
+  const cur = document.getElementById('fGruppe').value;
+  const groups = [...new Set(data.map(l => l.gruppe))];
+  document.getElementById('fGruppe').innerHTML = '<option value="">Alle Gruppen</option>' +
+    groups.map(g => '<option>' + esc(g) + '</option>').join('');
+  if(groups.includes(cur)) document.getElementById('fGruppe').value = cur;
+}
+
+function openCabDialog(cab){
+  if(gesperrt()){
+    document.getElementById('lockFach').textContent = 'Schränke ändern';
+    document.getElementById('dlgLock').showModal();
+    return;
+  }
+  editCab = cab;
+  const dl = document.getElementById('grpList');
+  dl.innerHTML = [...new Set(data.map(l => l.gruppe))]
+    .map(g => '<option value="' + esc(g) + '">').join('');
+  document.getElementById('nErr').textContent = '';
+  const isEdit = !!cab;
+  document.getElementById('nTitle').textContent = isEdit ? 'Schrank bearbeiten' : 'Neuen Schrank anlegen';
+  document.getElementById('nSave').textContent = isEdit ? 'Änderungen speichern' : 'Schrank anlegen';
+  document.getElementById('nAnzahlBox').classList.toggle('hide', isEdit);
+  document.getElementById('nHintNew').classList.toggle('hide', isEdit);
+  document.getElementById('nHintEdit').classList.toggle('hide', !isEdit);
+  document.getElementById('nDelete').classList.toggle('hide', !isEdit);
+  if(isEdit){
+    const cells = data.filter(l => l.gruppe === cab.gruppe && l.schrank === cab.schrank);
+    const bel = cells.filter(isBelegt).length;
+    document.getElementById('nGruppe').value = cab.gruppe;
+    document.getElementById('nSchrank').value = cab.schrank;
+    document.getElementById('nHintEdit').textContent =
+      'Änderungen gelten für alle ' + cells.length + ' Fächer dieses Schranks' +
+      (bel ? ' (' + bel + ' davon belegt – die Kinder bleiben im Fach)' : '') + '.';
+  }else{
+    document.getElementById('nGruppe').value = document.getElementById('fGruppe').value || '';
+    document.getElementById('nSchrank').value = '';
+    document.getElementById('nAnzahl').value = 12;
+  }
+  document.getElementById('dlgNew').showModal();
+}
+
+document.getElementById('btnNew').onclick = () => { closeMenu(); openCabDialog(null); };
+
+document.getElementById('nDelete').onclick = () => {
+  const c = editCab;
+  document.getElementById('dlgNew').close();
+  deleteCabinet(c.gruppe, c.schrank);
+};
+
+document.getElementById('nSave').onclick = () => {
+  const gruppe = document.getElementById('nGruppe').value.trim();
+  const schrank = document.getElementById('nSchrank').value.trim();
+  const err = document.getElementById('nErr');
+  if(!gruppe){ err.textContent = 'Bitte eine Gruppe angeben.'; return; }
+  if(!schrank){ err.textContent = 'Bitte eine Schranknummer angeben.'; return; }
+
+  const clash = data.some(l => l.gruppe === gruppe && l.schrank === schrank &&
+    !(editCab && l.gruppe === editCab.gruppe && l.schrank === editCab.schrank));
+  if(clash){ err.textContent = 'Schrank ' + schrank + ' gibt es in dieser Gruppe schon.'; return; }
+
+  snapshot(editCab ? 'Schrank ' + editCab.schrank + ' geändert' : 'Schrank ' + schrank + ' angelegt');
+  if(editCab){
+    const cells = data.filter(l => l.gruppe === editCab.gruppe && l.schrank === editCab.schrank);
+    for(const l of cells){ l.gruppe = gruppe; l.schrank = schrank; }
+  }else{
+    const anzahl = parseInt(document.getElementById('nAnzahl').value, 10);
+    if(!(anzahl >= 1 && anzahl <= 60)){ err.textContent = 'Anzahl muss zwischen 1 und 60 liegen.'; return; }
+    for(let i = 0; i < anzahl; i++)
+      data.push({id: newId(), gruppe: gruppe, schrank: schrank, fach: '', schloss: '',
+                 name: '', k1: false, k2: false, extra: 0, notiz: '', defekt: false});
+  }
+  save();
+  refreshGroupFilter();
+  render();
+  editCab = null;
+  document.getElementById('dlgNew').close();
+};
+
+/* ---------- Schrank loeschen ---------- */
+function deleteCabinet(gruppe, schrank){
+  if(gesperrt()){
+    document.getElementById('lockFach').textContent = 'Schrank löschen';
+    document.getElementById('dlgLock').showModal();
+    return;
+  }
+  const cells = data.filter(l => l.gruppe === gruppe && l.schrank === schrank);
+  const belegt = cells.filter(isBelegt);
+  let msg = 'Schrank ' + schrank + ' (' + gruppe + ') mit ' + cells.length + ' Fächern löschen?';
+  if(belegt.length) msg += '\n\nAchtung: ' + belegt.length +
+    ' Fächer sind noch belegt (' + belegt.slice(0,5).map(l => l.name).join(', ') +
+    (belegt.length > 5 ? ', …' : '') + ').';
+  msg += '\n\nDas lässt sich nicht rückgängig machen.';
+  if(!confirm(msg)) return;
+  snapshot('Schrank ' + schrank + ' gelöscht');
+  data = data.filter(l => !(l.gruppe === gruppe && l.schrank === schrank));
+  save();
+  refreshGroupFilter();
+  render();
+}
+
+/* ---------- Helle / dunkle Ansicht ---------- */
+const THEMEKEY = 'ogs_theme';
+const THEMES = ['system', 'light', 'dark'];
+const THEMELABEL = {system: 'Ansicht: System', light: 'Ansicht: Hell', dark: 'Ansicht: Dunkel'};
+let theme = 'system';
+
+function applyTheme(t){
+  theme = THEMES.includes(t) ? t : 'system';
+  const r = document.documentElement;
+  if(theme === 'system') r.removeAttribute('data-theme');
+  else r.setAttribute('data-theme', theme);
+  document.getElementById('btnTheme').querySelector('span').textContent = THEMELABEL[theme];
+  try{ localStorage.setItem(THEMEKEY, theme); }catch(e){}
+}
+
+document.getElementById('btnTheme').onclick = () => {
+  applyTheme(THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length]);
+};
+
+try{ applyTheme(localStorage.getItem(THEMEKEY) || 'system'); }catch(e){ applyTheme('system'); }
+
+document.getElementById('btnPrint').onclick = () => { closeMenu(); window.print(); };
+
+function download(inhalt, dateiname, typ){
+  const blob = new Blob([inhalt], {type: typ});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = dateiname;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* Erinnerung an Sicherungskopien – die Datei neben der HTML schützt vor
+   Browser-Problemen, aber nicht vor versehentlichem Überschreiben. */
+const BACKUPKEY = 'ogs_last_backup';
+function tageSeit(iso){
+  if(!iso) return null;
+  const d = new Date(iso + 'T00:00:00'), n = new Date(heute() + 'T00:00:00');
+  return Math.round((n - d) / 86400000);
+}
+function pruefeBackup(){
+  const el = document.getElementById('backupHint');
+  if(!el) return;
+  // Wichtigster Fall zuerst: Änderungen stehen in keiner Datei
+  if(ungesichert && !fileHandle){
+    el.innerHTML = '<button id="btnBackupHint" class="hintpill alarm">' +
+      'Änderungen noch nicht in der Datei</button>';
+    return;
+  }
+  let last = null;
+  try{ last = localStorage.getItem(BACKUPKEY); }catch(e){}
+  const tage = tageSeit(last);
+  if(last === null){
+    el.innerHTML = '<button id="btnBackupHint" class="hintpill">Noch keine Sicherungskopie</button>';
+  }else if(tage !== null && tage >= 30){
+    el.innerHTML = '<button id="btnBackupHint" class="hintpill">Letzte Sicherung vor ' + tage + ' Tagen</button>';
+  }else el.innerHTML = '';
+}
+
+document.getElementById('btnExport').onclick = () => {
+  closeMenu();
+  download(JSON.stringify(data, null, 1),
+    'schliessfaecher_' + heute() + '.json', 'application/json');
+  try{ localStorage.setItem(BACKUPKEY, heute()); }catch(e){}
+  pruefeBackup();
+  toast('Sicherungskopie gespeichert');
+};
+
+/* ---------- CSV für Excel ----------
+   Semikolon als Trenner und BOM voran, sonst öffnet deutsches Excel
+   alles in einer Spalte und zerlegt die Umlaute. */
+function csvFeld(v){
+  const t = (v === null || v === undefined) ? '' : String(v);
+  return /[";\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+}
+function statusText(l){
+  if(isDefekt(l)) return 'defekt';
+  if(isFrei(l)) return 'frei';
+  if(isPersonal(l)) return 'Personal / Sonderzweck';
+  return 'belegt';
+}
+function csvBauen(rows){
+  const kopf = ['Gruppe','Schrank','Fach','Schloss','Status','Name','Kind gehört zu Gruppe',
+                'Schlüssel vorhanden','Schlüssel gesamt','Notiz','Vorher belegt durch'];
+  const zeilen = rows.map(l => {
+    const frueher = (l.verlauf || []).filter(e => e.bis)
+      .map(e => e.name + (e.bis ? ' (bis ' + datumDE(e.bis) + ')' : '')).join(', ');
+    return [l.gruppe, l.schrank, l.fach, l.schloss, statusText(l),
+            isDefekt(l) ? '' : l.name,
+            (l.heim && l.heim !== l.gruppe) ? l.heim : '',
+            l.defekt ? '' : (Number(l.schlDa) || 0),
+            l.defekt ? '' : (Number(l.schlSoll) || 0),
+            l.notiz || '', frueher].map(csvFeld).join(';');
+  });
+  return '\ufeff' + kopf.map(csvFeld).join(';') + '\r\n' + zeilen.join('\r\n') + '\r\n';
+}
+
+document.getElementById('btnCsv').onclick = () => {
+  closeMenu();
+  const rows = data.filter(matches);
+  const gefiltert = rows.length !== data.length;
+  const sortiert = rows.slice().sort((a, b) =>
+    (a.gruppe + a.schrank + a.fach).localeCompare(b.gruppe + b.schrank + b.fach, 'de', {numeric: true}));
+  download(csvBauen(sortiert),
+    'schliessfaecher_' + heute() + (gefiltert ? '_auswahl' : '') + '.csv',
+    'text/csv;charset=utf-8');
+  toast(rows.length + (gefiltert ? ' gefilterte' : '') + ' Fächer als CSV gespeichert');
+};
+
+document.getElementById('btnReset').onclick = async () => {
+  closeMenu();
+  if(!confirm('Alle Daten in dieser App löschen?\n\n' +
+    'Damit wird der gespeicherte Stand im Browser entfernt und die Verbindung zur Datei gelöst.\n' +
+    'Die Dateien im Ordner bleiben unangetastet.\n\n' +
+    'Danach kannst du über "Sicherung laden" eine Sicherungskopie einlesen.')) return;
+  if(!confirm('Wirklich sicher?\n\nDas lässt sich nicht rückgängig machen. ' +
+    'Stelle sicher, dass du eine Sicherungskopie hast.')) return;
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  try{ localStorage.removeItem(UIKEY); }catch(e){}
+  try{ localStorage.removeItem(BACKUPKEY); }catch(e){}
+  await idbDel(HANDLE_KEY);
+  fileHandle = null;
+  ungesichert = false;
+  undoStack = [];
+  try{ sessionStorage.setItem('ogs_reset', '1'); }catch(e){}
+  location.reload();
+};
+
+document.getElementById('btnImport').onclick = () => {
+  closeMenu();
+  if(gesperrt()){
+    document.getElementById('lockFach').textContent = 'Sicherung laden';
+    document.getElementById('dlgLock').showModal();
+    return;
+  }
+  document.getElementById('file').click();
+};
+
+document.getElementById('file').onchange = e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const d = JSON.parse(r.result);
+      if(!Array.isArray(d) || !d.length || !('fach' in d[0])) throw new Error('bad');
+      if(!confirm(d.length + ' Fächer laden? Die aktuellen Daten werden ersetzt.')) return;
+      snapshot('Sicherung geladen');
+      data = normalize(d); save(); refreshGroupFilter(); render();
+      zeigeSperre();
+      if(gesperrt()){
+        setState('Nicht freigegeben', 'warn');
+        showConnect('Datei freigeben');
+      }
+      toast(d.length + ' Fächer geladen');
+    }catch(err){ alert('Datei konnte nicht gelesen werden.'); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+};
+
+window.addEventListener('resize', measureSticky);
+window.addEventListener('beforeunload', e => {
+  if(ungesichert && !fileHandle){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+document.getElementById('btnConnect').onclick = connectClick;
+
+function helpHtml(){
+  const fs = FS_SUPPORTED
+    ? '<p>Beim ersten Start einmal auf <b>Datei-Speicherung aktivieren</b> klicken und die Datei ' +
+      '<code>Schliessfaecher_Daten.json</code> im selben Ordner wählen. Danach wird <b>jede Änderung sofort dort gespeichert</b> – ' +
+      'ohne Knopfdruck. Oben steht dann grün, wohin gespeichert wurde.</p>' +
+      '<p>Das ist wichtig: Löscht jemand die Browserdaten, holt sich die App den Stand beim nächsten Start aus dieser Datei zurück.</p>'
+    : '<p><b>Achtung:</b> Dieser Browser kann nicht direkt in eine Datei speichern. Die Daten liegen nur im Browser – ' +
+      'bitte regelmäßig auf <b>Sichern</b> klicken. In Microsoft Edge funktioniert die Dateispeicherung.</p>';
+
+  return '<div class="help">' +
+    '<h3>Wo liegen die Daten?</h3>' +
+    '<p>Diese HTML-Datei enthält <b>keine</b> Fächer – sie ist nur das Programm. ' +
+    'Eure Daten stehen in <code>Schliessfaecher_Daten.json</code> im selben Ordner ' +
+    'und zusätzlich im Browser.</p>' +
+    '<p>Ist die App leer, über <b>Sicherung laden</b> oder <b>Datei verbinden</b> die Daten holen.</p>' +
+
+    '<h3>Fächer vergeben</h3>' +
+    '<p>Auf ein Fach klicken, Namen eintragen, <b>Speichern</b>. Fertig. ' +
+    'Zum Freigeben den Namen löschen oder <b>Fach freigeben</b> klicken.</p>' +
+    '<p><span class="lg f">grün</span> frei &nbsp; <span class="lg b">orange</span> belegt &nbsp; ' +
+    '<span class="lg d">grau</span> defekt. Die Fächer stehen genauso wie am echten Schrank (3 Spalten, 4 Reihen).</p>' +
+
+    '<h3>Suchen und filtern</h3>' +
+    '<p>Ins Suchfeld Name, Fach-, Schloss- oder Schranknummer eintippen – Treffer werden hervorgehoben. ' +
+    'Der Filter <b>Nur freie</b> beantwortet die häufigste Frage mit einem Klick. ' +
+    'Mit <b>Nur defekte</b> und <b>Schlüssel-Probleme</b> findet man, was zu klären ist.</p>' +
+
+    '<h3>Defekte Fächer</h3>' +
+    '<p>Fach anklicken, Haken bei <b>Fach ist defekt</b>. Solche Fächer zählen <b>nicht als frei</b>, ' +
+    'damit kein Kind ein kaputtes Fach bekommt. Was kaputt ist, am besten in die Notiz schreiben.</p>' +
+
+    '<h3>Versehen rückgängig machen</h3>' +
+    '<p>Nach einer Änderung erscheint oben <b>↶ Rückgängig</b> – damit lässt sich der letzte Schritt ' +
+    'zurücknehmen, auch ein versehentlich gelöschter Schrank. Es gehen bis zu 20 Schritte zurück. ' +
+    'Tastenkürzel: <b>Strg + Z</b>.</p>' +
+
+    '<h3>Kind aus einer anderen Gruppe</h3>' +
+    '<p>Sitzt ein Kind im Schrank einer anderen Gruppe, trägt man das im Fach unter ' +
+    '<b>Kind gehört zu Gruppe</b> ein. Am Fach erscheint dann ein kleines <b>G</b>, und über die Suche ' +
+    'findet man alle Kinder einer Gruppe, auch wenn sie woanders untergebracht sind.</p>' +
+
+    '<h3>Wenn eine Gruppe voll wird</h3>' +
+    '<p>Sind in einer Gruppe nur noch zwei oder weniger Fächer frei, erscheint oben ein roter Hinweis. ' +
+    'Ein Klick darauf führt zur Auswertung – dort steht unter <b>Wo ist noch Platz?</b>, ' +
+    'welche Schränke noch Luft haben.</p>' +
+
+    '<h3>Fächer für Personal</h3>' +
+    '<p>Fächer, die nicht an ein Kind gehen (Ersatzschlüssel, Technik, Mitarbeitende), lassen sich im Fach mit ' +
+    '<b>Kein Kind (Personal / Sonderzweck)</b> kennzeichnen. Sie erscheinen blau und werden in der ' +
+    'Auswertung getrennt gezählt, damit die Kinder-Zahlen stimmen.</p>' +
+
+    '<h3>Wer hatte das Fach vorher?</h3>' +
+    '<p>Einzelne Einträge lassen sich mit dem <b>×</b> daneben löschen, der ganze Verlauf eines Fachs ' +
+    'über <b>Alle löschen</b> – etwa wenn beim Ausprobieren Einträge entstanden sind. ' +
+    'Die aktuelle Belegung bleibt dabei erhalten.</p>' +
+    '<p>Die App merkt sich jeden Wechsel. Öffnet man ein Fach, steht unten <b>Vorher in diesem Fach</b> ' +
+    'mit Namen und Zeitraum – hilfreich, wenn ein Schlüssel fehlt. Unter <b>Auswertung</b> stehen zusätzlich ' +
+    'die letzten Änderungen über alle Fächer.</p>' +
+
+    '<h3>Schränke verwalten</h3>' +
+    '<p><b>+ Schrank</b> legt einen neuen Schrank an; die Fächer sind zunächst leer, ' +
+    'Fach- und Schlossnummer trägt man danach bei jedem Fach ein.</p>' +
+    '<p>Mit der Maus über einen Schrank fahren: oben rechts erscheint <b>Bearbeiten</b> ' +
+    '(Gruppe oder Schranknummer ändern – die Kinder bleiben in ihren Fächern) und <b>×</b> zum Löschen. ' +
+    'So ordnet man einen Schrank zum neuen Schuljahr einer anderen Gruppe zu.</p>' +
+
+    '<h3>Speichern und sichern</h3>' + fs +
+    '<p><b>Nach jedem Browser-Start muss die Datei einmal freigegeben werden.</b> ' +
+    'Bis dahin ist die App im <b>Nur-Ansicht-Modus</b>: Alle Fächer sind sichtbar, Suchen und ' +
+    'Filtern funktioniert – nur Ändern ist gesperrt. So kann nichts verloren gehen.</p>' +
+    '<p>Zum Bearbeiten oben auf <b>Datei freigeben</b> klicken (oder auf ein Fach – dann wird gefragt). ' +
+    'Danach wird jede Änderung sofort in der Datei gespeichert.</p>' +
+    '<p>Dass die Freigabe nicht dauerhaft gilt, ist eine Sicherheitsregel des Browsers für Dateien, ' +
+    'die per Doppelklick geöffnet werden – kein Fehler der App.</p>' +
+    '<p><b>Sicherungskopie speichern</b> legt zusätzlich eine datierte Datei an – sinnvoll vor größeren ' +
+    'Änderungen. <b>Sicherung laden</b> liest so eine Kopie wieder ein.</p>' +
+
+    '<h3>Nach Excel exportieren</h3>' +
+    '<p><b>Mehr → Als CSV für Excel</b> erzeugt eine Tabelle mit allen Fächern: Gruppe, Schrank, Fach, ' +
+    'Schloss, Status, Name, beide Schlüssel, Notiz und wer das Fach vorher hatte. ' +
+    'Die Datei lässt sich per Doppelklick in Excel öffnen.</p>' +
+    '<p>Ist gerade ein Filter gesetzt (z. B. „Nur freie“ oder eine Gruppe), enthält die Datei nur diese ' +
+    'Fächer – praktisch für eine Liste pro Gruppe. Der Dateiname endet dann auf <code>_auswahl</code>.</p>' +
+    '<p class="warnbox">Die CSV-Datei ist zum Auswerten und Ausdrucken gedacht. ' +
+    'Zurücklesen kann die App nur die <b>JSON</b>-Sicherung – Änderungen in Excel kommen also nicht zurück.</p>' +
+    '<p class="warnbox">Arbeiten zwei Personen an verschiedenen Rechnern, überschreibt die zuletzt geladene ' +
+    'Sicherung die andere. Am einfachsten: ein Rechner führt die Liste.</p>' +
+
+    '<h3>Ansicht wechseln</h3>' +
+    '<p>Links oben stehen die drei Ansichten: <b>Schränke</b> (das Standardbild), ' +
+    '<b>Liste</b> als sortierbare Tabelle (auf eine Spaltenüberschrift klicken) und ' +
+    '<b>Auswertung</b> mit Zahlen und offenen Punkten. Dort steht unter <b>Prüfen</b> auch, ob eine ' +
+    'Schlossnummer versehentlich doppelt vergeben wurde.</p>' +
+    '<p>Unter <b>Mehr</b> stehen die selteneren Funktionen: Schrank anlegen, Sicherung speichern und laden, ' +
+    'Drucken, die Umschaltung zwischen heller und dunkler Ansicht sowie diese Hilfe.</p>' +
+
+    '<h3>Schlüssel</h3>' +
+    '<p>Im Fach stehen zwei Zahlen: <b>wie viele Schlüssel gerade da sind</b> und ' +
+    '<b>wie viele zum Fach gehören</b>. Meist sind es zwei, bei manchen Fächern drei, vier oder fünf.</p>' +
+    '<p>Fehlt einer, meldet die App das automatisch – am Fach steht dann z. B. „1 Schl. fehlt“, ' +
+    'und oben erscheint die Gesamtzahl. Über den Filter <b>Schlüssel fehlt</b> und in der ' +
+    '<b>Auswertung</b> sieht man alle betroffenen Fächer auf einen Blick.</p>' +
+    '<p>Gibt jemand einen Schlüssel zurück oder geht einer verloren, einfach die linke Zahl ändern. ' +
+    'Kommt dauerhaft ein Zusatzschlüssel dazu, auch die rechte erhöhen.</p>' +
+    '</div>';
+}
+
+document.getElementById('btnHelp').onclick = () => {
+  closeMenu();
+  document.getElementById('helpBody').innerHTML = helpHtml();
+  document.getElementById('dlgHelp').showModal();
+};
+
+load();
+const sel = document.getElementById('fGruppe');
+for(const g of [...new Set(data.map(l => l.gruppe))])
+  sel.insertAdjacentHTML('beforeend', '<option>' + esc(g) + '</option>');
+applyUI();
+render();
+zeigeSperre();
+pruefeBackup();
+restoreFile();
+
+</script>
+</body>
+</html>

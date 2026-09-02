@@ -1,0 +1,23 @@
+# --- Daten der Einrichtung: gehören NICHT ins Repository ---
+Schliessfaecher_Daten.json
+schliessfaecher_*.json
+Startdaten_Sicherung.json
+*.odt
+*.ods
+*.docx
+*.xlsx
+
+# Fotos der Räumlichkeiten
+*.jpg
+*.jpeg
+*.png
+*.heic
+
+# Arbeitsordner
+temp/
+.__*
+
+# System
+Thumbs.db
+desktop.ini
+.DS_Store
