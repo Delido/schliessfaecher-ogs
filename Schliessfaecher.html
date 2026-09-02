@@ -1207,7 +1207,8 @@ function renderStatsPage(){
     '<span class="sub">' + datumDE(e.d) + '</span></div>').join('')
     : '<div class="muted">Noch keine Änderungen aufgezeichnet. Sobald ein Fach neu vergeben oder frei gegeben wird, erscheint es hier.</div>';
 
-  // Datenprüfung: dasselbe Schloss kann real nur an einem Fach hängen
+  // Hinweis auf mehrfach vergebene Schlossnummern – kann Absicht sein
+  // (gleichschließende Schlösser, getrennte Nummernkreise) oder ein Tippfehler.
   const lockMap = {};
   for(const l of data) if(l.schloss) (lockMap[l.schloss] = lockMap[l.schloss] || []).push(l);
   const dupLocks = Object.entries(lockMap).filter(e => e[1].length > 1);
@@ -1229,8 +1230,9 @@ function renderStatsPage(){
 
   const pruefHtml = (dupLocks.length || dupNames.length) ?
     '<section class="scard"><h3>Prüfen</h3>' +
-      (dupLocks.length ? '<div class="ssub">Schlossnummer mehrfach vergeben (' + dupLocks.length + ')</div>' +
-        '<div class="muted">Ein Schloss kann nur an einem Fach hängen – vermutlich ein Zahlendreher.</div>' +
+      (dupLocks.length ? '<div class="ssub">Gleiche Schlossnummer bei mehreren Fächern (' + dupLocks.length + ')</div>' +
+        '<div class="muted">Kann so gewollt sein (gleichschließende Schlösser oder getrennte ' +
+        'Nummernkreise je Gruppe) – oder ein Tippfehler. Bitte einmal am Schrank prüfen.</div>' +
         dupLockHtml : '') +
       (dupNames.length ? '<div class="ssub">Gleicher Name in mehreren Fächern (' + dupNames.length + ')</div>' +
         '<div class="muted">Kann richtig sein (zwei Kinder mit gleichem Namen) – bitte kurz prüfen.</div>' +

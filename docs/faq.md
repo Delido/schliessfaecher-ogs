@@ -54,6 +54,16 @@
     Getestet mit gut 200 Fächern ohne merkliche Verzögerung. Auch einige Tausend sollten
     problemlos laufen, da alles im Arbeitsspeicher gehalten wird.
 
+??? question "Die Auswertung meldet gleiche Schlossnummern – ist das ein Fehler?"
+
+    Nicht unbedingt. Gleiche Schlossnummern können durchaus richtig sein: bei
+    gleichschließenden Schlössern, oder wenn Nummernkreise je Gruppe oder Lieferung
+    getrennt geführt werden.
+
+    Die App weist nur darauf hin, damit man es einmal am Schrank abgleichen kann –
+    sie behauptet nicht, dass etwas falsch ist. Stimmt die Nummer, kann der Hinweis
+    einfach stehen bleiben.
+
 ??? question "Ein Kind hat zwei Fächer – geht das?"
 
     Ja. Die App verhindert das nicht. In der **Auswertung** unter *Prüfen* wird allerdings
