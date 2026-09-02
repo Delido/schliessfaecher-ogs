@@ -26,6 +26,7 @@
   --shadow:0 1px 2px rgba(35,32,33,.05),0 1px 3px rgba(35,32,33,.04);
   --shadow-lift:0 4px 14px rgba(35,32,33,.13);
   --radius:10px;
+  --cellw:112px;
   --stickyTop:0px;
 }
 @media (prefers-color-scheme: dark){
@@ -160,8 +161,11 @@ main{padding:22px 20px 60px;max-width:1440px;margin:0 auto}
 .grp h2 .c{font-size:12.5px;font-weight:400;color:var(--mut);font-family:var(--font-ui)}
 .cabs{display:flex;gap:16px;flex-wrap:wrap}
 .cab{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  padding:11px;box-shadow:var(--shadow)}
-.cab .ch{font-size:12px;color:var(--mut);margin-bottom:9px;font-weight:600;
+  padding:10px 10px 11px;box-shadow:var(--shadow)}
+.cab .korpus{background:var(--line-2);border:1px solid var(--line);
+  border-radius:7px;padding:4px}
+.cmass{font-weight:400;opacity:.65;font-variant-numeric:tabular-nums}
+.cab .ch{font-size:12px;color:var(--mut);margin-bottom:8px;font-weight:600;
   display:flex;align-items:center;justify-content:space-between;gap:8px;
   font-family:var(--font-head);letter-spacing:.02em}
 .cabbtns{display:flex;align-items:center;gap:2px;opacity:0;transition:opacity .12s}
@@ -173,13 +177,17 @@ main{padding:22px 20px 60px;max-width:1440px;margin:0 auto}
   padding:1px 6px;cursor:pointer;border-radius:6px}
 .delcab:hover{background:var(--warn-bg);color:var(--warn)}
 
-.grid{display:grid;grid-template-columns:repeat(3,112px);grid-auto-rows:72px;gap:5px}
-.cell{border:1px solid var(--line);border-radius:8px;padding:7px 8px 6px 10px;cursor:pointer;
+.grid{display:grid;grid-template-columns:repeat(3,var(--cellw));grid-auto-rows:70px;gap:4px}
+.cell{border:1px solid var(--line);border-radius:5px;padding:6px 8px 5px 11px;cursor:pointer;
   overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
   text-align:left;background:var(--card-2);position:relative;
   transition:transform .1s,box-shadow .1s,border-color .1s}
-.cell::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--defekt-line);border-radius:8px 0 0 8px}
+/* farbige Statuskante links */
+.cell::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--defekt-line);border-radius:5px 0 0 5px}
+/* angedeuteter Türgriff rechts */
+.cell::after{content:"";position:absolute;right:5px;top:50%;transform:translateY(-50%);
+  width:3px;height:15px;border-radius:2px;background:currentColor;opacity:.22}
 .cell:hover{transform:translateY(-1px);box-shadow:var(--shadow-lift);z-index:2}
 .cell.frei{background:var(--frei-bg);border-color:var(--frei-line)}
 .cell.frei::before{background:var(--frei)}
@@ -273,6 +281,9 @@ label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-botto
   padding:10px 12px;font-size:13px;color:var(--mut);line-height:1.65}
 .meta b{color:var(--ink);font-weight:600}
 .dsub b{color:var(--ink-2);font-weight:600}
+.pvgrid{display:grid;gap:3px;margin-top:7px}
+.pv{width:14px;height:11px;border-radius:2px;background:var(--accent);opacity:.55}
+.pv.leer{background:var(--line);opacity:1}
 .defekt-box{background:var(--card-2);border:1px solid var(--line);border-radius:8px;padding:11px 12px}
 .hint{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.45}
 .hide{display:none!important}
@@ -380,7 +391,7 @@ td.wbar{width:34%;min-width:120px}
 @media(max-width:700px){
   header,.bar{padding:10px 12px}
   main{padding:14px 12px 40px}
-  .grid{grid-template-columns:repeat(3,minmax(78px,1fr))}
+  :root{--cellw:minmax(76px,1fr)}
   .cab{flex:1 1 100%}
   .headright{margin-left:0;width:100%}
   .stats{width:100%}
@@ -504,7 +515,12 @@ td.wbar{width:34%;min-width:120px}
           <label for="nAnzahl">Anzahl Fächer</label>
           <input type="number" id="nAnzahl" value="12" min="1" max="60">
         </div>
+        <div>
+          <label for="nSpalten">Fächer nebeneinander</label>
+          <input type="number" id="nSpalten" value="3" min="1" max="12">
+        </div>
       </div>
+      <div class="hint" id="nVorschau"></div>
       <div class="hint" id="nHintNew">Die Fächer werden leer angelegt. Fach- und Schlossnummer trägst du
         anschließend bei jedem Fach selbst ein (Fach anklicken).</div>
       <div class="hint hide" id="nHintEdit"></div>
@@ -660,6 +676,17 @@ function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
   scheduleWrite();
 }
+// Spalten pro Schrank: am Fach gespeichert, sonst passend zur Fachzahl geraten
+function spaltenVon(cells){
+  const gesetzt = cells.find(l => Number(l.spalten) > 0);
+  if(gesetzt) return Math.min(12, Math.max(1, Number(gesetzt.spalten)));
+  const n = cells.length;
+  if(n % 3 === 0 && n <= 36) return 3;      // klassisch: 3 Spalten
+  if(n % 4 === 0) return 4;
+  if(n % 2 === 0) return 2;
+  return Math.min(4, n);
+}
+
 const isDefekt = l => !!l.defekt;
 const isFrei = l => !l.defekt && !l.name.trim();
 const isBelegt = l => !l.defekt && !!l.name.trim();
@@ -754,14 +781,18 @@ function renderPlan(){
               (l.notiz ? ' <span class="kw" title="' + esc(l.notiz) + '">Notiz</span>' : '') +
               '</div></button>';
       }
-      cabHtml += '<div class="cab"><div class="ch"><span>Schrank ' + esc(c) + ' · ' + cFrei + ' frei' +
+      const spalten = spaltenVon(cells);
+      const reihen = Math.ceil(cells.length / spalten);
+      cabHtml += '<div class="cab"><div class="ch"><span>Schrank ' + esc(c) +
+                 ' <span class="cmass">' + spalten + '×' + reihen + '</span> · ' + cFrei + ' frei' +
                  (cDef ? ' · ' + cDef + ' defekt' : '') + '</span>' +
                  '<span class="cabbtns noprint">' +
                  '<button class="editcab" title="Schrank bearbeiten (Gruppe, Nummer)" data-g="' + esc(g) +
                  '" data-c="' + esc(c) + '">Bearbeiten</button>' +
                  '<button class="delcab" title="Schrank löschen" data-g="' + esc(g) +
                  '" data-c="' + esc(c) + '">×</button></span></div>' +
-                 '<div class="grid">' + g2 + '</div></div>';
+                 '<div class="korpus"><div class="grid" style="grid-template-columns:repeat(' +
+                 spalten + ',var(--cellw))">' + g2 + '</div></div></div>';
     }
     if(filtering && !anyVisible) continue;
     html += '<section class="grp"><h2>' + esc(g) + ' <span class="c">' + inG.length +
@@ -1521,6 +1552,8 @@ function openCabDialog(cab){
     const bel = cells.filter(isBelegt).length;
     document.getElementById('nGruppe').value = cab.gruppe;
     document.getElementById('nSchrank').value = cab.schrank;
+    document.getElementById('nSpalten').value = spaltenVon(cells);
+    document.getElementById('nAnzahl').value = cells.length;
     document.getElementById('nHintEdit').textContent =
       'Änderungen gelten für alle ' + cells.length + ' Fächer dieses Schranks' +
       (bel ? ' (' + bel + ' davon belegt – die Kinder bleiben im Fach)' : '') + '.';
@@ -1528,9 +1561,28 @@ function openCabDialog(cab){
     document.getElementById('nGruppe').value = document.getElementById('fGruppe').value || '';
     document.getElementById('nSchrank').value = '';
     document.getElementById('nAnzahl').value = 12;
+    document.getElementById('nSpalten').value = 3;
   }
+  schrankVorschau();
   document.getElementById('dlgNew').showModal();
 }
+
+function schrankVorschau(){
+  const n = parseInt(document.getElementById('nAnzahl').value, 10) || 0;
+  const sp = Math.max(1, parseInt(document.getElementById('nSpalten').value, 10) || 1);
+  const el = document.getElementById('nVorschau');
+  if(!el) return;
+  if(!n){ el.innerHTML = ''; return; }
+  const reihen = Math.ceil(n / sp);
+  let g = '';
+  for(let i = 0; i < reihen * sp; i++)
+    g += '<span class="pv' + (i < n ? '' : ' leer') + '"></span>';
+  el.innerHTML = 'Anordnung: ' + sp + ' nebeneinander, ' + reihen +
+    (reihen === 1 ? ' Reihe' : ' Reihen') +
+    '<div class="pvgrid" style="grid-template-columns:repeat(' + sp + ',14px)">' + g + '</div>';
+}
+for(const id of ['nAnzahl','nSpalten'])
+  document.getElementById(id).addEventListener('input', schrankVorschau);
 
 document.getElementById('btnNew').onclick = () => { closeMenu(); openCabDialog(null); };
 
@@ -1552,15 +1604,18 @@ document.getElementById('nSave').onclick = () => {
   if(clash){ err.textContent = 'Schrank ' + schrank + ' gibt es in dieser Gruppe schon.'; return; }
 
   snapshot(editCab ? 'Schrank ' + editCab.schrank + ' geändert' : 'Schrank ' + schrank + ' angelegt');
+  const spalten = Math.min(12, Math.max(1, parseInt(document.getElementById('nSpalten').value, 10) || 3));
   if(editCab){
     const cells = data.filter(l => l.gruppe === editCab.gruppe && l.schrank === editCab.schrank);
-    for(const l of cells){ l.gruppe = gruppe; l.schrank = schrank; }
+    for(const l of cells){ l.gruppe = gruppe; l.schrank = schrank; l.spalten = spalten; }
   }else{
     const anzahl = parseInt(document.getElementById('nAnzahl').value, 10);
     if(!(anzahl >= 1 && anzahl <= 60)){ err.textContent = 'Anzahl muss zwischen 1 und 60 liegen.'; return; }
     for(let i = 0; i < anzahl; i++)
       data.push({id: newId(), gruppe: gruppe, schrank: schrank, fach: '', schloss: '',
-                 name: '', k1: false, k2: false, extra: 0, notiz: '', defekt: false});
+                 name: '', k1: false, k2: false, extra: 0, notiz: '', defekt: false,
+                 personal: false, heim: '', verlauf: [], schlSoll: 2, schlDa: 2,
+                 spalten: spalten});
   }
   save();
   refreshGroupFilter();

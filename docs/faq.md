@@ -41,6 +41,14 @@
 
     Zum Übertragen zwischen Rechnern dient die JSON-Sicherung.
 
+??? question "Unsere Schränke haben eine andere Aufteilung als 3×4 – geht das?"
+
+    Ja. Beim Anlegen gibt man an, wie viele Fächer **nebeneinander** liegen; eine Vorschau
+    zeigt das Ergebnis sofort. Möglich ist alles von einer einzelnen Reihe bis zu zwölf
+    Fächern nebeneinander.
+
+    Bei bestehenden Schränken lässt sich die Anordnung über **Bearbeiten** ändern.
+
 ??? question "Wie viele Fächer verträgt die App?"
 
     Getestet mit gut 200 Fächern ohne merkliche Verzögerung. Auch einige Tausend sollten

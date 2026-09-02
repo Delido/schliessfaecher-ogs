@@ -2,8 +2,11 @@
 
 ## Neuen Schrank anlegen
 
-Über **Mehr → Schrank anlegen**. Gruppe wählen oder neu eintippen, Schranknummer und
-Anzahl der Fächer angeben.
+Über **Mehr → Schrank anlegen**. Gruppe wählen oder neu eintippen, Schranknummer,
+Anzahl der Fächer und **wie viele nebeneinander** liegen.
+
+Eine kleine Vorschau zeigt dabei sofort, wie der Schrank aussehen wird – so lässt sich
+jede Bauform abbilden: 3×4 wie im Bild, aber ebenso 2×5, 4×4 oder eine einzelne Reihe.
 
 Die Fächer werden **leer** angelegt. Fach- und Schlossnummer trägt man anschließend bei
 jedem Fach selbst ein – Fach anklicken, unter **Weitere Angaben** die Nummern eintragen.
@@ -16,8 +19,10 @@ jedem Fach selbst ein – Fach anklicken, unter **Weitere Angaben** die Nummern 
 Der übliche Fall zum neuen Schuljahr: Mit der Maus über den Schrank fahren – oben rechts
 erscheint **Bearbeiten**.
 
-Dort lassen sich **Gruppe** und **Schranknummer** ändern. Die Änderung gilt für alle Fächer
-des Schranks, und **die Kinder bleiben in ihren Fächern**.
+Dort lassen sich **Gruppe**, **Schranknummer** und die **Anordnung** ändern. Die Änderung
+gilt für alle Fächer des Schranks, und **die Kinder bleiben in ihren Fächern**.
+
+Die Anordnung steht auch im Schrankkopf, zum Beispiel „Schrank 7138 **3×4**".
 
 Eine neue Gruppe kann man einfach eintippen; sie muss noch nicht existieren. Gruppen, denen
 kein Schrank mehr zugeordnet ist, verschwinden automatisch aus der Auswahlliste.
