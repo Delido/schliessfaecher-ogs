@@ -325,6 +325,18 @@ label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-botto
 .scard .tblwrap{border:none;box-shadow:none;background:none}
 .scard table th{background:none;position:static;box-shadow:none;border-bottom:1px solid var(--line-2)}
 .scols{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px}
+.prcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:20px}
+.prlist{display:flex;flex-direction:column;gap:3px}
+.prow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:4px 0;
+  border-bottom:1px solid var(--line-2)}
+.prow:last-child{border-bottom:none}
+.pkey{font-weight:600;font-size:13px;min-width:118px;flex:none}
+.pchips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-size:11.5px;background:var(--card-2);border:1px solid var(--line);
+  border-radius:5px;padding:1px 7px;color:var(--mut);white-space:nowrap}
+.chip b{color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums}
+.shint{display:block;font-weight:400;font-size:11.5px;margin-top:2px;
+  font-family:var(--font-ui);letter-spacing:0;text-transform:none}
 .ssub{font-size:12px;font-weight:600;color:var(--mut);margin:14px 0 7px;
   font-family:var(--font-head);letter-spacing:.02em}
 .ssub:first-child{margin-top:0}
@@ -1212,10 +1224,13 @@ function renderStatsPage(){
   const lockMap = {};
   for(const l of data) if(l.schloss) (lockMap[l.schloss] = lockMap[l.schloss] || []).push(l);
   const dupLocks = Object.entries(lockMap).filter(e => e[1].length > 1);
-  const dupLockHtml = dupLocks.slice(0, 12).map(e =>
-    '<div class="lrow"><span>Schloss <b>' + esc(e[0]) + '</b> <span class="sub">' +
-    e[1].map(l => esc(l.gruppe) + ' / Fach ' + esc(l.fach || '—')).join(' · ') + '</span></span>' +
-    '<span class="tag d">' + e[1].length + '×</span></div>').join('');
+  const chips = arr => arr.map(l =>
+    '<span class="chip"><b>' + esc(l.fach || '—') + '</b> ' + esc(l.gruppe) + '</span>').join('');
+  const dupLockHtml = '<div class="prlist">' + dupLocks.slice(0, 12).map(e =>
+    '<div class="prow"><span class="pkey">Schloss ' + esc(e[0]) + '</span>' +
+    '<span class="pchips">' + chips(e[1]) + '</span></div>').join('') +
+    (dupLocks.length > 12 ? '<div class="muted">… und ' + (dupLocks.length - 12) + ' weitere</div>' : '') +
+    '</div>';
 
   const nameMap = {};
   for(const l of data) if(isKind(l)){
@@ -1223,20 +1238,19 @@ function renderStatsPage(){
     (nameMap[k] = nameMap[k] || []).push(l);
   }
   const dupNames = Object.entries(nameMap).filter(e => e[1].length > 1);
-  const dupNameHtml = dupNames.slice(0, 12).map(e =>
-    '<div class="lrow"><span><b>' + esc(e[1][0].name) + '</b> <span class="sub">' +
-    e[1].map(l => esc(l.gruppe) + ' / Fach ' + esc(l.fach || '—')).join(' · ') + '</span></span>' +
-    '<span class="tag d">' + e[1].length + ' Fächer</span></div>').join('');
+  const dupNameHtml = '<div class="prlist">' + dupNames.slice(0, 12).map(e =>
+    '<div class="prow"><span class="pkey">' + esc(e[1][0].name) + '</span>' +
+    '<span class="pchips">' + chips(e[1]) + '</span></div>').join('') +
+    (dupNames.length > 12 ? '<div class="muted">… und ' + (dupNames.length - 12) + ' weitere</div>' : '') +
+    '</div>';
 
   const pruefHtml = (dupLocks.length || dupNames.length) ?
-    '<section class="scard"><h3>Prüfen</h3>' +
-      (dupLocks.length ? '<div class="ssub">Gleiche Schlossnummer (' + dupLocks.length + ')</div>' +
-        '<div class="muted">Identische Schlösser oder Tippfehler – kurz prüfen.</div>' +
-        dupLockHtml : '') +
-      (dupNames.length ? '<div class="ssub">Gleicher Name (' + dupNames.length + ')</div>' +
-        '<div class="muted">Namensgleichheit oder Tippfehler – kurz prüfen.</div>' +
-        dupNameHtml : '') +
-    '</section>' : '';
+    '<section class="scard"><h3>Prüfen</h3><div class="prcols">' +
+      (dupLocks.length ? '<div><div class="ssub">Gleiche Schlossnummer (' + dupLocks.length + ')' +
+        '<span class="shint">identische Schlösser oder Tippfehler</span></div>' + dupLockHtml + '</div>' : '') +
+      (dupNames.length ? '<div><div class="ssub">Gleicher Name (' + dupNames.length + ')' +
+        '<span class="shint">Namensgleichheit oder Tippfehler</span></div>' + dupNameHtml + '</div>' : '') +
+    '</div></section>' : '';
 
   document.getElementById('viewStats').innerHTML =
     '<div class="kpis">' +
