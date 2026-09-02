@@ -56,13 +56,9 @@
 
 ??? question "Die Auswertung meldet gleiche Schlossnummern – ist das ein Fehler?"
 
-    Nicht unbedingt. Gleiche Schlossnummern können durchaus richtig sein: bei
-    gleichschließenden Schlössern, oder wenn Nummernkreise je Gruppe oder Lieferung
-    getrennt geführt werden.
-
-    Die App weist nur darauf hin, damit man es einmal am Schrank abgleichen kann –
-    sie behauptet nicht, dass etwas falsch ist. Stimmt die Nummer, kann der Hinweis
-    einfach stehen bleiben.
+    Nicht unbedingt. Identische Schlösser sind durchaus üblich, ebenso getrennte
+    Nummernkreise je Gruppe. Der Hinweis dient nur dem kurzen Abgleich am Schrank –
+    stimmt alles, kann er stehen bleiben.
 
 ??? question "Ein Kind hat zwei Fächer – geht das?"
 

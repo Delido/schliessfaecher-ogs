@@ -1230,12 +1230,11 @@ function renderStatsPage(){
 
   const pruefHtml = (dupLocks.length || dupNames.length) ?
     '<section class="scard"><h3>Prüfen</h3>' +
-      (dupLocks.length ? '<div class="ssub">Gleiche Schlossnummer bei mehreren Fächern (' + dupLocks.length + ')</div>' +
-        '<div class="muted">Kann so gewollt sein (gleichschließende Schlösser oder getrennte ' +
-        'Nummernkreise je Gruppe) – oder ein Tippfehler. Bitte einmal am Schrank prüfen.</div>' +
+      (dupLocks.length ? '<div class="ssub">Gleiche Schlossnummer (' + dupLocks.length + ')</div>' +
+        '<div class="muted">Identische Schlösser oder Tippfehler – kurz prüfen.</div>' +
         dupLockHtml : '') +
-      (dupNames.length ? '<div class="ssub">Gleicher Name in mehreren Fächern (' + dupNames.length + ')</div>' +
-        '<div class="muted">Kann richtig sein (zwei Kinder mit gleichem Namen) – bitte kurz prüfen.</div>' +
+      (dupNames.length ? '<div class="ssub">Gleicher Name (' + dupNames.length + ')</div>' +
+        '<div class="muted">Namensgleichheit oder Tippfehler – kurz prüfen.</div>' +
         dupNameHtml : '') +
     '</section>' : '';
 
