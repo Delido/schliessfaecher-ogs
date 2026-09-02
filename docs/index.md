@@ -7,6 +7,8 @@ Entstanden als Ersatz für eine gewachsene Word-Tabelle. Die häufigste Frage im
 lautet „Welches Fach ist noch frei?", und die sollte sich mit einem Blick beantworten
 lassen.
 
+[⬇ Schliessfaecher.html herunterladen (Version 1.0)](https://github.com/Delido/schliessfaecher-ogs/releases/latest/download/Schliessfaecher.html){ .md-button .md-button--primary }
+
 <div class="grid cards" markdown>
 
 -   **Sofort loslegen**

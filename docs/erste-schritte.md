@@ -2,9 +2,11 @@
 
 ## Herunterladen
 
-Von der [Projektseite auf GitHub](https://github.com/Delido/schliessfaecher-ogs) die Datei
-`Schliessfaecher.html` herunterladen und in einen Ordner legen, auf den alle Zugriff haben
-– zum Beispiel einen OneDrive- oder Netzwerkordner.
+[⬇ Schliessfaecher.html herunterladen](https://github.com/Delido/schliessfaecher-ogs/releases/latest/download/Schliessfaecher.html){ .md-button .md-button--primary }
+
+Die Datei in einen Ordner legen, auf den alle Zugriff haben – zum Beispiel einen
+OneDrive- oder Netzwerkordner. Mehr wird nicht gebraucht: Diese eine Datei **ist** die
+komplette Anwendung.
 
 !!! tip "Verknüpfung anlegen"
     Rechtsklick auf die Datei → **Senden an → Desktop (Verknüpfung)**. Dann ist sie

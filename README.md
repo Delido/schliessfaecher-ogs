@@ -7,7 +7,18 @@ kein Internet.
 Entstanden als Ersatz für eine gewachsene Word-Tabelle: Die häufigste Frage im Alltag ist
 *„Welches Fach ist noch frei?"*, und die sollte sich mit einem Blick beantworten lassen.
 
-**📖 Dokumentation: <https://delido.github.io/schliessfaecher-ogs/>**
+## Herunterladen
+
+**[⬇ Schliessfaecher.html – Version 1.0](https://github.com/Delido/schliessfaecher-ogs/releases/latest/download/Schliessfaecher.html)**
+
+Das ist die komplette Anwendung: eine Datei, Doppelklick genügt. Alles andere in diesem
+Repository ist Quelltext und Dokumentation und wird nicht benötigt.
+
+Zum Ausprobieren zusätzlich
+[beispieldaten.json](https://github.com/Delido/schliessfaecher-ogs/releases/latest/download/beispieldaten.json)
+(84 erfundene Fächer) – in der App über *Mehr → Sicherung laden* einlesen.
+
+📖 **Anleitung: <https://delido.github.io/schliessfaecher-ogs/>**
 
 ## Auf einen Blick
 
@@ -26,7 +37,7 @@ Entstanden als Ersatz für eine gewachsene Word-Tabelle: Die häufigste Frage im
 
 ## Loslegen
 
-1. `Schliessfaecher.html` herunterladen und per Doppelklick öffnen
+1. Datei per Doppelklick öffnen
 2. Beim ersten Start eine der drei Optionen wählen – zum Ausprobieren
    `beispieldaten.json` über **Sicherungskopie einlesen** laden
 3. Über **Datei verbinden** eine eigene Datendatei anlegen; ab dann wird
