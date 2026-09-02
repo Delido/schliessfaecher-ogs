@@ -1,0 +1,2 @@
+# Nur zum Bauen der Dokumentation nötig – die App selbst braucht nichts davon.
+mkdocs-material==9.7.7
