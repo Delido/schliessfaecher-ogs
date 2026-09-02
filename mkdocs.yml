@@ -9,7 +9,6 @@ copyright: MIT-Lizenz – frei verwendbar
 theme:
   name: material
   language: de
-  custom_dir: docs/.overrides
   font: false            # keine Google Fonts – Systemschriften, siehe Datenschutz
   icon:
     repo: fontawesome/brands/github
