@@ -19,8 +19,13 @@ jedem Fach selbst ein – Fach anklicken, unter **Weitere Angaben** die Nummern 
 Der übliche Fall zum neuen Schuljahr: Mit der Maus über den Schrank fahren – oben rechts
 erscheint **Bearbeiten**.
 
-Dort lassen sich **Gruppe**, **Schranknummer** und die **Anordnung** ändern. Die Änderung
-gilt für alle Fächer des Schranks, und **die Kinder bleiben in ihren Fächern**.
+Dort lassen sich **Gruppe**, **Schranknummer**, die **Anzahl der Fächer** und die
+**Anordnung** ändern. Die Änderung gilt für alle Fächer des Schranks, und **die Kinder
+bleiben in ihren Fächern**.
+
+Wird die Anzahl **erhöht**, kommen leere Fächer dazu. Wird sie **verringert**, entfallen
+die letzten Fächer – sind darunter belegte, werden die betroffenen Kinder vorher namentlich
+genannt. Ein Versehen lässt sich mit **↶ Rückgängig** zurücknehmen.
 
 Die Anordnung steht auch im Schrankkopf, zum Beispiel „Schrank 7138 **3×4**".
 

@@ -524,7 +524,7 @@ td.wbar{width:34%;min-width:120px}
           <input type="text" id="nSchrank" placeholder="z. B. 7145" autocomplete="off">
         </div>
         <div id="nAnzahlBox">
-          <label for="nAnzahl">Anzahl Fächer</label>
+          <label for="nAnzahl"><span id="nAnzahlLabel">Anzahl Fächer</span></label>
           <input type="number" id="nAnzahl" value="12" min="1" max="60">
         </div>
         <div>
@@ -1558,7 +1558,7 @@ function openCabDialog(cab){
   const isEdit = !!cab;
   document.getElementById('nTitle').textContent = isEdit ? 'Schrank bearbeiten' : 'Neuen Schrank anlegen';
   document.getElementById('nSave').textContent = isEdit ? 'Änderungen speichern' : 'Schrank anlegen';
-  document.getElementById('nAnzahlBox').classList.toggle('hide', isEdit);
+  document.getElementById('nAnzahlBox').classList.remove('hide');
   document.getElementById('nHintNew').classList.toggle('hide', isEdit);
   document.getElementById('nHintEdit').classList.toggle('hide', !isEdit);
   document.getElementById('nDelete').classList.toggle('hide', !isEdit);
@@ -1569,6 +1569,7 @@ function openCabDialog(cab){
     document.getElementById('nSchrank').value = cab.schrank;
     document.getElementById('nSpalten').value = spaltenVon(cells);
     document.getElementById('nAnzahl').value = cells.length;
+    document.getElementById('nAnzahlLabel').textContent = 'Anzahl Fächer';
     document.getElementById('nHintEdit').textContent =
       'Änderungen gelten für alle ' + cells.length + ' Fächer dieses Schranks' +
       (bel ? ' (' + bel + ' davon belegt – die Kinder bleiben im Fach)' : '') + '.';
@@ -1577,6 +1578,7 @@ function openCabDialog(cab){
     document.getElementById('nSchrank').value = '';
     document.getElementById('nAnzahl').value = 12;
     document.getElementById('nSpalten').value = 3;
+    document.getElementById('nAnzahlLabel').textContent = 'Anzahl Fächer';
   }
   schrankVorschau();
   document.getElementById('dlgNew').showModal();
@@ -1618,19 +1620,45 @@ document.getElementById('nSave').onclick = () => {
     !(editCab && l.gruppe === editCab.gruppe && l.schrank === editCab.schrank));
   if(clash){ err.textContent = 'Schrank ' + schrank + ' gibt es in dieser Gruppe schon.'; return; }
 
-  snapshot(editCab ? 'Schrank ' + editCab.schrank + ' geändert' : 'Schrank ' + schrank + ' angelegt');
   const spalten = Math.min(12, Math.max(1, parseInt(document.getElementById('nSpalten').value, 10) || 3));
+  const anzahl = parseInt(document.getElementById('nAnzahl').value, 10);
+  if(!(anzahl >= 1 && anzahl <= 60)){ err.textContent = 'Anzahl muss zwischen 1 und 60 liegen.'; return; }
+
+  // Beim Verkleinern erst fragen – es können belegte Fächer betroffen sein
+  let entfallen = [];
+  if(editCab){
+    const cells = data.filter(l => l.gruppe === editCab.gruppe && l.schrank === editCab.schrank);
+    if(anzahl < cells.length){
+      entfallen = cells.slice(anzahl);
+      const belegt = entfallen.filter(isBelegt);
+      let msg = entfallen.length + (entfallen.length === 1 ? ' Fach' : ' Fächer') +
+        ' am Ende des Schranks entfernen?';
+      if(belegt.length) msg += '\n\nAchtung: ' + belegt.length + ' davon belegt (' +
+        belegt.slice(0, 5).map(l => l.name).join(', ') + (belegt.length > 5 ? ', …' : '') + ').';
+      if(!confirm(msg)){ err.textContent = 'Nichts geändert.'; return; }
+    }
+  }
+
+  snapshot(editCab ? 'Schrank ' + editCab.schrank + ' geändert' : 'Schrank ' + schrank + ' angelegt');
+
+  const neuesFach = () => ({id: newId(), gruppe: gruppe, schrank: schrank, fach: '', schloss: '',
+    name: '', k1: false, k2: false, extra: 0, notiz: '', defekt: false,
+    personal: false, heim: '', verlauf: [], schlSoll: 2, schlDa: 2, spalten: spalten});
+
   if(editCab){
     const cells = data.filter(l => l.gruppe === editCab.gruppe && l.schrank === editCab.schrank);
     for(const l of cells){ l.gruppe = gruppe; l.schrank = schrank; l.spalten = spalten; }
+    const diff = anzahl - cells.length;
+    if(diff > 0){
+      for(let i = 0; i < diff; i++) data.push(neuesFach());
+      toast(diff + (diff === 1 ? ' Fach ergänzt' : ' Fächer ergänzt'));
+    }else if(entfallen.length){
+      const weg = new Set(entfallen.map(l => l.id));
+      data = data.filter(l => !weg.has(l.id));
+      toast(entfallen.length + (entfallen.length === 1 ? ' Fach entfernt' : ' Fächer entfernt'));
+    }
   }else{
-    const anzahl = parseInt(document.getElementById('nAnzahl').value, 10);
-    if(!(anzahl >= 1 && anzahl <= 60)){ err.textContent = 'Anzahl muss zwischen 1 und 60 liegen.'; return; }
-    for(let i = 0; i < anzahl; i++)
-      data.push({id: newId(), gruppe: gruppe, schrank: schrank, fach: '', schloss: '',
-                 name: '', k1: false, k2: false, extra: 0, notiz: '', defekt: false,
-                 personal: false, heim: '', verlauf: [], schlSoll: 2, schlDa: 2,
-                 spalten: spalten});
+    for(let i = 0; i < anzahl; i++) data.push(neuesFach());
   }
   save();
   refreshGroupFilter();
