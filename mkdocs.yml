@@ -1,0 +1,71 @@
+site_name: Schließfächer OGS
+site_description: Schließfachverwaltung für OGS, Kita oder Verein – eine einzelne HTML-Datei
+site_url: https://delido.github.io/schliessfaecher-ogs/
+repo_url: https://github.com/Delido/schliessfaecher-ogs
+repo_name: Delido/schliessfaecher-ogs
+edit_uri: edit/main/docs/
+copyright: MIT-Lizenz – frei verwendbar
+
+theme:
+  name: material
+  language: de
+  custom_dir: docs/.overrides
+  font: false            # keine Google Fonts – Systemschriften, siehe Datenschutz
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.sections
+    - content.action.edit
+    - search.highlight
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Zur dunklen Ansicht wechseln
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Zur hellen Ansicht wechseln
+
+nav:
+  - Start: index.md
+  - Für die Praxis:
+      - Erste Schritte: erste-schritte.md
+      - Fächer verwalten: faecher.md
+      - Schränke und Gruppen: schraenke.md
+      - Speichern und Sichern: speichern.md
+  - Hintergrund:
+      - Datenschutz: datenschutz.md
+      - Häufige Fragen: faq.md
+      - Technik: technik.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.keys
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: de
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Delido/schliessfaecher-ogs
+      name: Projekt auf GitHub

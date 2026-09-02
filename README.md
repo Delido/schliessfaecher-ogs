@@ -7,6 +7,8 @@ kein Internet.
 Entstanden als Ersatz für eine gewachsene Word-Tabelle: Die häufigste Frage im Alltag ist
 *„Welches Fach ist noch frei?"*, und die sollte sich mit einem Blick beantworten lassen.
 
+**📖 Dokumentation: <https://delido.github.io/schliessfaecher-ogs/>**
+
 ## Auf einen Blick
 
 - **Schrankansicht** – die Fächer stehen genau wie am echten Schrank (3 Spalten, 4 Reihen),

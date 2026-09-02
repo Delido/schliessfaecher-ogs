@@ -13,6 +13,9 @@ Startdaten_Sicherung.json
 *.png
 *.heic
 
+# MkDocs-Ausgabe (wird von GitHub Actions gebaut)
+site/
+
 # Arbeitsordner
 temp/
 .__*
