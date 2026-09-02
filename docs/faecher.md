@@ -10,10 +10,10 @@ Zum Freigeben den Namen löschen oder auf **Fach freigeben** klicken.
 
 | Farbe | Bedeutung |
 |---|---|
-| :material-square:{ style="color:#2f7d4f" } **grün** | frei – kann vergeben werden |
-| :material-square:{ style="color:#a15c17" } **orange** | an ein Kind vergeben |
-| :material-square:{ style="color:#3f5c96" } **blau** | Personal oder Sonderzweck |
-| :material-square:{ style="color:#6b6764" } **grau, durchgestrichen** | defekt, nicht benutzbar |
+| <span class="sw sw-frei"></span> **grün** | frei – kann vergeben werden |
+| <span class="sw sw-belegt"></span> **orange** | an ein Kind vergeben |
+| <span class="sw sw-personal"></span> **blau** | Personal oder Sonderzweck |
+| <span class="sw sw-defekt"></span> **grau, durchgestrichen** | defekt, nicht benutzbar |
 
 ## Defekte Fächer
 
@@ -76,5 +76,5 @@ Die Filter beantworten die häufigsten Fragen mit einem Klick:
 
 ## Versehen rückgängig machen
 
-Nach jeder Änderung erscheint oben **↶ Rückgängig** (oder [[Strg+Z]]). Damit lässt sich der
+Nach jeder Änderung erscheint oben **↶ Rückgängig** (oder **Strg + Z**). Damit lässt sich der
 letzte Schritt zurücknehmen – bis zu 20 Schritte, auch ein versehentlich gelöschter Schrank.

@@ -50,14 +50,19 @@ nav:
 
 markdown_extensions:
   - admonition
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.keys
   - attr_list
+  - def_list
   - md_in_html
   - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - toc:
       permalink: true
+
+extra_css:
+  - stylesheets/extra.css
 
 plugins:
   - search:

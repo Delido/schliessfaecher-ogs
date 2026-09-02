@@ -1,0 +1,19 @@
+/* Farbkästchen für die Statustabelle – dieselben Farben wie in der App */
+.sw{
+  display:inline-block;
+  width:14px;
+  height:14px;
+  border-radius:3px;
+  vertical-align:-2px;
+  margin-right:.45em;
+  border:1px solid rgba(0,0,0,.18);
+}
+.sw-frei{background:#2f7d4f}
+.sw-belegt{background:#a15c17}
+.sw-personal{background:#3f5c96}
+.sw-defekt{background:#6b6764}
+
+/* Karten auf der Startseite */
+.md-typeset .grid.cards > ul > li{
+  border-radius:.5rem;
+}
